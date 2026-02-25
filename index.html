@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edge AI Chat</title>
+</head>
+<body>
+    <h1>Browser LLM Test</h1>
+    <div id="status">Loading model...</div>
+    <br>
+    <textarea id="prompt" rows="3" cols="50" placeholder="Type your message here..."></textarea>
+    <br>
+    <button id="send" disabled>Send</button>
+    <br><br>
+    <div id="response"></div>
+
+    <script type="module">
+        import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+
+        const statusEl = document.getElementById("status");
+        const promptEl = document.getElementById("prompt");
+        const sendBtn = document.getElementById("send");
+        const responseEl = document.getElementById("response");
+
+        // Start with TinyLlama since it's smaller and loads faster
+        const engine = new webllm.MLCEngine();
+
+        async function initModel() {
+            statusEl.textContent = "Downloading model... (this takes a few minutes the first time)";
+
+            await engine.reload("Llama-3.2-1B-Instruct-q4f16_1-MLC", {
+                initProgressCallback: (progress) => {
+                    statusEl.textContent = progress.text;
+                }
+            });
+
+            statusEl.textContent = "Model ready!";
+            sendBtn.disabled = false;
+        }
+
+        sendBtn.addEventListener("click", async () => {
+            const userMessage = promptEl.value;
+            if (!userMessage) return;
+
+            sendBtn.disabled = true;
+            responseEl.textContent = "Thinking...";
+
+            const reply = await engine.chat.completions.create({
+                messages: [{ role: "user", content: userMessage }],
+                temperature: 0.7,
+            });
+
+            responseEl.textContent = reply.choices[0].message.content;
+            sendBtn.disabled = false;
+        });
+
+        initModel();
+    </script>
+</body>
+</html>
