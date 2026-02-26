@@ -27,7 +27,7 @@
         async function initModel() {
             statusEl.textContent = "Downloading model... (this takes a few minutes the first time)";
 
-            await engine.reload("Llama-3.2-1B-Instruct-q4f16_1-MLC", {
+            await engine.reload("Llama-3.1-8B-Instruct-q4f32_1-MLC", {
                 initProgressCallback: (progress) => {
                     statusEl.textContent = progress.text;
                 }
