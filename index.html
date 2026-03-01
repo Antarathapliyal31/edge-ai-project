@@ -21,7 +21,7 @@
         const sendBtn = document.getElementById("send");
         const responseEl = document.getElementById("response");
 
-        // Start with TinyLlama since it's smaller and loads faster
+       
         const engine = new webllm.MLCEngine();
 
         async function initModel() {
@@ -37,21 +37,49 @@
             sendBtn.disabled = false;
         }
 
-        sendBtn.addEventListener("click", async () => {
+       sendBtn.addEventListener("click", async () => {
             const userMessage = promptEl.value;
             if (!userMessage) return;
 
             sendBtn.disabled = true;
-            responseEl.textContent = "Thinking...";
+            responseEl.textContent = "";
+
+            const startTime = performance.now();
+            let firstTokenTime = null;
+            let tokenCount = 0;
 
             const reply = await engine.chat.completions.create({
                 messages: [{ role: "user", content: userMessage }],
-                temperature: 0.7,
+                temperature: 0.2,
+                stream: true,
             });
 
-            responseEl.textContent = reply.choices[0].message.content;
+            for await (const chunk of reply) {
+                const token = chunk.choices[0]?.delta?.content || "";
+                if (token && !firstTokenTime) {
+                    firstTokenTime = performance.now();
+                }
+                if (token) {
+                    tokenCount++;
+                    responseEl.textContent += token;
+                }
+            }
+
+            const endTime = performance.now();
+
+            // Calculate metrics
+            const ttft = firstTokenTime - startTime;           // Time to First Token (ms)
+            const totalTime = endTime - startTime;              // Total generation time (ms)
+            const decodeTime = endTime - firstTokenTime;        // Time spent generating after first token
+            const tokensPerSec = tokenCount / (decodeTime / 1000);  // Tokens per second
+
+            console.log(`TTFT: ${ttft.toFixed(0)}ms`);
+            console.log(`Total time: ${totalTime.toFixed(0)}ms`);
+            console.log(`Tokens: ${tokenCount}`);
+            console.log(`Speed: ${tokensPerSec.toFixed(1)} tokens/sec`);
+
             sendBtn.disabled = false;
-        });
+});
 
         initModel();
     </script>
