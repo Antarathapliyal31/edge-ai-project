@@ -12,6 +12,8 @@
     <button id="send" disabled>Send</button>
     <br><br>
     <div id="response"></div>
+    <br>
+    <div id="metrics" style="background-color: #f0f0f0; padding: 10px; font-family: monospace;"></div>
 
     <script type="module">
         import * as webllm from "https://esm.run/@mlc-ai/web-llm";
@@ -20,11 +22,12 @@
         const promptEl = document.getElementById("prompt");
         const sendBtn = document.getElementById("send");
         const responseEl = document.getElementById("response");
+        const metricsEl = document.getElementById("metrics");
 
-       
         const engine = new webllm.MLCEngine();
 
         async function initModel() {
+            const modelLoadStart = performance.now();
             statusEl.textContent = "Downloading model... (this takes a few minutes the first time)";
 
             await engine.reload("Llama-3.1-8B-Instruct-q4f32_1-MLC", {
@@ -33,16 +36,20 @@
                 }
             });
 
-            statusEl.textContent = "Model ready!";
+            const modelLoadEnd = performance.now();
+            const modelLoadTime = ((modelLoadEnd - modelLoadStart) / 1000).toFixed(1);
+
+            statusEl.textContent = "Model ready! (loaded in " + modelLoadTime + " seconds)";
             sendBtn.disabled = false;
         }
 
-       sendBtn.addEventListener("click", async () => {
+        sendBtn.addEventListener("click", async () => {
             const userMessage = promptEl.value;
             if (!userMessage) return;
 
             sendBtn.disabled = true;
             responseEl.textContent = "";
+            metricsEl.textContent = "Generating...";
 
             const startTime = performance.now();
             let firstTokenTime = null;
@@ -50,7 +57,8 @@
 
             const reply = await engine.chat.completions.create({
                 messages: [{ role: "user", content: userMessage }],
-                temperature: 0.2,
+                temperature: 0.0,
+                max_tokens: 256,
                 stream: true,
             });
 
@@ -67,19 +75,21 @@
 
             const endTime = performance.now();
 
-            // Calculate metrics
-            const ttft = firstTokenTime - startTime;           // Time to First Token (ms)
-            const totalTime = endTime - startTime;              // Total generation time (ms)
-            const decodeTime = endTime - firstTokenTime;        // Time spent generating after first token
-            const tokensPerSec = tokenCount / (decodeTime / 1000);  // Tokens per second
+            const ttft = firstTokenTime - startTime;
+            const totalTime = endTime - startTime;
+            const decodeTime = endTime - firstTokenTime;
+            const tokensPerSec = tokenCount / (decodeTime / 1000);
 
-            console.log(`TTFT: ${ttft.toFixed(0)}ms`);
-            console.log(`Total time: ${totalTime.toFixed(0)}ms`);
-            console.log(`Tokens: ${tokenCount}`);
-            console.log(`Speed: ${tokensPerSec.toFixed(1)} tokens/sec`);
+            metricsEl.innerHTML = 
+                "<b>Performance Metrics:</b><br>" +
+                "Time to First Token (TTFT): " + ttft.toFixed(0) + " ms<br>" +
+                "Tokens Per Second (TPS): " + tokensPerSec.toFixed(1) + " tokens/sec<br>" +
+                "Total Tokens Generated: " + tokenCount + "<br>" +
+                "Total Response Time: " + (totalTime / 1000).toFixed(2) + " seconds<br>" +
+                "Decode Time: " + (decodeTime / 1000).toFixed(2) + " seconds";
 
             sendBtn.disabled = false;
-});
+        });
 
         initModel();
     </script>
