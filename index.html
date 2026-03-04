@@ -96,7 +96,7 @@
     </style>
 </head>
 <body>
-    <h1>Edge AI Chat — Performance Benchmark</h1>
+    <h1>Edge AI Chat</h1>
     <div id="status">Loading model...</div>
     <div id="modelInfo" style="font-family: monospace; color: #555; margin-top: 5px;"></div>
     <br>
@@ -439,16 +439,16 @@
 
             benchmarkSummary.style.display = "block";
             benchmarkSummary.innerHTML =
-                "<b>===== BENCHMARK SUMMARY =====</b><br>" +
+                "<b>BENCHMARK SUMMARY/b><br>" +
                 "Model: " + MODEL_ID + "<br>" +
                 "Date: " + new Date().toISOString() + "<br><br>" +
 
-                "<b>--- LATENCY METRICS ---</b><br>" +
+                "<b>LATENCY METRICS/b><br>" +
                 "Avg TTFT: " + avgTTFT.toFixed(0) + " ms<br>" +
                 "Min TTFT: " + minTTFT.toFixed(0) + " ms<br>" +
                 "Max TTFT: " + maxTTFT.toFixed(0) + " ms<br><br>" +
 
-                "<b>--- THROUGHPUT METRICS ---</b><br>" +
+                "<b>THROUGHPUT METRICS/b><br>" +
                 "Avg Tokens/Sec: " + avgTPS.toFixed(1) + "<br>" +
                 "Min Tokens/Sec: " + minTPS.toFixed(1) + "<br>" +
                 "Max Tokens/Sec: " + maxTPS.toFixed(1) + "<br>" +
@@ -456,19 +456,19 @@
                 "Queries Per Minute: " + qpm + "<br>" +
                 "Total Tokens Generated: " + totalTokens + "<br><br>" +
 
-                "<b>--- RESOURCE METRICS ---</b><br>" +
+                "<b>RESOURCE METRICS</b><br>" +
                 "Model Size: ~" + MODEL_SIZE_MB + " MB<br>" +
                 "Quantization: " + QUANTIZATION + "<br>" +
                 "Model Load Time: " + modelLoadTimeSec + " s<br>" +
                 "Loaded From Cache: " + (loadedFromCache ? "Yes" : "No") + "<br>" +
                 "Total Benchmark Time: " + totalTime + " s<br><br>" +
 
-                "<b>--- THERMAL THROTTLING ---</b><br>" +
+                "<b>THERMAL THROTTLING</b><br>" +
                 "First 5 queries avg TPS: " + first5TPS.toFixed(1) + "<br>" +
                 "Last 5 queries avg TPS: " + last5TPS.toFixed(1) + "<br>" +
                 "Performance Drop: " + throttleDrop + "%<br><br>" +
 
-                "<b>--- COST COMPARISON (for " + TEST_PROMPTS.length + " queries) ---</b><br>" +
+                "<b>COST COMPARISON (for " + TEST_PROMPTS.length + " queries)</b><br>" +
                 "Browser (WebGPU): $0.00<br>" +
                 "OpenAI GPT-4o-mini: ~$" + (totalTokens * 0.00000060).toFixed(4) + "<br>" +
                 "Anthropic Claude Haiku: ~$" + (totalTokens * 0.00000125).toFixed(4) + "<br>" +
