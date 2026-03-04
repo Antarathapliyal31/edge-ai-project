@@ -6,79 +6,320 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: bisque;
         }
         #response {
-            border: 1px solid black;
-            padding: 10px;
-            width: 80%;
-            min-height: 100px;
             white-space: pre-wrap;
-            background-color: white;
-        }    
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            max-width: 800px;
+        }
+        #metrics {
+            background-color: #f0f0f0;
+            padding: 10px;
+            font-family: monospace;
+            max-width: 800px;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #benchmarkBtn {
+            background-color: #2563eb;
+            color: white;
+            border: 1px solid #1d4ed8;
+        }
+        #systemMetrics {
+            background-color: #e8f0fe;
+            padding: 10px;
+            font-family: monospace;
+            max-width: 800px;
+            margin-top: 10px;
+        }
+        #benchmarkResults {
+            margin-top: 10px;
+            max-width: 100%;
+            overflow-x: auto;
+            display: none;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #2563eb;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        #benchmarkSummary {
+            background-color: #f0fdf4;
+            padding: 10px;
+            font-family: monospace;
+            max-width: 800px;
+            margin-top: 10px;
+            display: none;
+        }
+        #progressBar {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            max-width: 800px;
+            display: none;
+            margin-top: 5px;
+        }
+        #progressFill {
+            height: 100%;
+            background-color: #2563eb;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        #exportBtn {
+            background-color: #059669;
+            color: white;
+            border: 1px solid #047857;
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Edge AI Chat</h1>
+    <h1>Edge AI Chat — Performance Benchmark</h1>
     <div id="status">Loading model...</div>
+    <div id="modelInfo" style="font-family: monospace; color: #555; margin-top: 5px;"></div>
     <br>
     <textarea id="prompt" rows="3" cols="50" placeholder="Type your message here..."></textarea>
-    <br>
-    <button id="send" disabled>Send</button>
     <br><br>
+    <button id="send" class="btn" disabled>Send</button>
+    <button id="benchmarkBtn" class="btn" disabled>Run Auto Benchmark (20 queries)</button>
+    <div id="progressBar"><div id="progressFill"></div></div>
+    <br>
     <div id="response"></div>
     <br>
-    <div id="metrics" style="background-color: #f0f0f0; padding: 10px; font-family: monospace;"></div>
+    <div id="metrics"></div>
+    <div id="systemMetrics"></div>
+    <div id="benchmarkResults"></div>
+    <div id="benchmarkSummary"></div>
+    <button id="exportBtn" class="btn">Export Results as CSV</button>
 
     <script type="module">
         import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
         const statusEl = document.getElementById("status");
+        const modelInfoEl = document.getElementById("modelInfo");
         const promptEl = document.getElementById("prompt");
         const sendBtn = document.getElementById("send");
+        const benchmarkBtn = document.getElementById("benchmarkBtn");
+        const progressBar = document.getElementById("progressBar");
+        const progressFill = document.getElementById("progressFill");
         const responseEl = document.getElementById("response");
         const metricsEl = document.getElementById("metrics");
+        const systemMetricsEl = document.getElementById("systemMetrics");
+        const benchmarkResults = document.getElementById("benchmarkResults");
+        const benchmarkSummary = document.getElementById("benchmarkSummary");
+        const exportBtn = document.getElementById("exportBtn");
 
+        const MODEL_ID = "Llama-3.1-8B-Instruct-q4f32_1-MLC";
+        const MODEL_SIZE_MB = 4500;
+        const MODEL_PARAMS = "8B";
+        const QUANTIZATION = "q4f32 (4-bit weights, 32-bit activations)";
         const engine = new webllm.MLCEngine();
 
+        //Storage
+        let allBenchmarkResults = [];
+        let modelLoadTimeSec = 0;
+        let loadedFromCache = false;
+
+        //tandard Test Prompts
+        const TEST_PROMPTS = [
+            { id: "Q01", category: "Factual-Simple", prompt: "What is the capital of France?", expected: "Paris", check: "Must mention Paris" },
+            { id: "Q02", category: "Factual-Simple", prompt: "What planet is closest to the Sun?", expected: "Mercury", check: "Must state Mercury" },
+            { id: "Q03", category: "Factual-Simple", prompt: "Who wrote the play Romeo and Juliet?", expected: "Shakespeare", check: "Must name Shakespeare" },
+            { id: "Q04", category: "Factual-Moderate", prompt: "What is photosynthesis?", expected: "Plants convert sunlight to glucose/oxygen", check: "Must mention plants + sunlight + oxygen/glucose" },
+            { id: "Q05", category: "Factual-Moderate", prompt: "Explain what HTTP status code 404 means.", expected: "Not Found", check: "Must convey not found" },
+            { id: "Q06", category: "Technical-CS", prompt: "What is the difference between a stack and a queue in data structures?", expected: "Stack=LIFO, Queue=FIFO", check: "Must identify LIFO and FIFO" },
+            { id: "Q07", category: "Technical-CS", prompt: "What is the time complexity of binary search?", expected: "O(log n)", check: "Must state O(log n)" },
+            { id: "Q08", category: "Technical-ML", prompt: "What is PCA in machine learning?", expected: "Principal Component Analysis, dimensionality reduction", check: "Must expand PCA correctly" },
+            { id: "Q09", category: "Technical-ML", prompt: "What is overfitting in machine learning?", expected: "Model learns training data too well, poor on new data", check: "Good on training, poor on test" },
+            { id: "Q10", category: "Reasoning-Math", prompt: "If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?", expected: "150 miles", check: "Must give 150" },
+            { id: "Q11", category: "Reasoning-Math", prompt: "What is 15% of 200?", expected: "30", check: "Must give 30" },
+            { id: "Q12", category: "Reasoning-Logic", prompt: "If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?", expected: "No", check: "Must say No" },
+            { id: "Q13", category: "Reasoning-Logic", prompt: "A farmer has 17 sheep. All but 9 die. How many sheep are left?", expected: "9", check: "Must say 9" },
+            { id: "Q14", category: "Code", prompt: "Write a Python function that takes a list of numbers and returns the largest number.", expected: "Working Python code with max() or loop", check: "Must be valid Python" },
+            { id: "Q15", category: "Code", prompt: "Write a Python function to check if a string is a palindrome.", expected: "Working Python code", check: "Must be valid Python" },
+            { id: "Q16", category: "Summarization", prompt: "Summarize the concept of supply and demand in economics in 2-3 sentences.", expected: "Price relationship with supply/demand", check: "Must mention both + price" },
+            { id: "Q17", category: "Instruction", prompt: "List exactly 3 programming languages that start with the letter P.", expected: "Python, Perl, PHP (exactly 3)", check: "Must list exactly 3" },
+            { id: "Q18", category: "Instruction", prompt: "Explain what an API is in exactly one sentence.", expected: "One sentence about software communication", check: "Must be one sentence" },
+            { id: "Q19", category: "Long-Response", prompt: "Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.", expected: "Covers DNS, TCP/IP, HTTP", check: "Must cover all three" },
+            { id: "Q20", category: "Long-Response", prompt: "Compare and contrast supervised learning and unsupervised learning in machine learning.", expected: "Labeled vs unlabeled data", check: "Must describe both correctly" }
+        ];
+
+        //System Metrics
+        async function getSystemMetrics() {
+            var html = "<b>System and Resource Metrics:</b><br>";
+
+            // Browser storage
+            try {
+                var estimate = await navigator.storage.estimate();
+                var usedMB = Math.round(estimate.usage / 1024 / 1024);
+                var availableMB = Math.round(estimate.quota / 1024 / 1024);
+                var usedPercent = ((estimate.usage / estimate.quota) * 100).toFixed(1);
+                html += "Browser Storage Used: " + usedMB + " MB / " + availableMB + " MB (" + usedPercent + "%)<br>";
+            } catch (e) {
+                html += "Browser Storage: Unable to measure<br>";
+            }
+
+            //Model info
+            html += "Model: " + MODEL_ID + "<br>";
+            html += "Model Size: ~" + MODEL_SIZE_MB + " MB<br>";
+            html += "Parameters: " + MODEL_PARAMS + "<br>";
+            html += "Quantization: " + QUANTIZATION + "<br>";
+            html += "Loaded From Cache: " + (loadedFromCache ? "Yes" : "No (fresh download)") + "<br>";
+            html += "Model Load Time: " + modelLoadTimeSec + " seconds<br>";
+
+            //WebGPU info
+            try {
+                var adapter = await navigator.gpu.requestAdapter();
+                if (adapter) {
+                    var info = await adapter.requestAdapterInfo();
+                    html += "GPU Vendor: " + (info.vendor || "Unknown") + "<br>";
+                    html += "GPU Architecture: " + (info.architecture || "Unknown") + "<br>";
+                    html += "GPU Device: " + (info.device || "Unknown") + "<br>";
+                    html += "GPU Description: " + (info.description || "Unknown") + "<br>";
+                }
+            } catch (e) {
+                html += "GPU Info: Unable to retrieve<br>";
+            }
+
+            // Browser and hardware info
+            html += "Browser: " + navigator.userAgent.split(') ').pop() + "<br>";
+            html += "Platform: " + navigator.platform + "<br>";
+            html += "CPU Cores: " + navigator.hardwareConcurrency + "<br>";
+            html += "Device Memory: " + (navigator.deviceMemory || "Unknown") + " GB<br>";
+
+            return html;
+        }
+
+        //Run Single Query for benchmark
+        async function runQuery(prompt) {
+            var startTime = performance.now();
+            var firstTokenTime = null;
+            var tokenCount = 0;
+            var fullResponse = "";
+
+            var reply = await engine.chat.completions.create({
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.0,
+                max_tokens: 256,
+                stream: true,
+            });
+
+            for await (var chunk of reply) {
+                var token = chunk.choices[0]?.delta?.content || "";
+                if (token && !firstTokenTime) {
+                    firstTokenTime = performance.now();
+                }
+                if (token) {
+                    tokenCount++;
+                    fullResponse += token;
+                }
+            }
+
+            var endTime = performance.now();
+            var ttft = firstTokenTime ? firstTokenTime - startTime : 0;
+            var totalTime = endTime - startTime;
+            var decodeTime = firstTokenTime ? endTime - firstTokenTime : 0;
+            var tokensPerSec = decodeTime > 0 ? tokenCount / (decodeTime / 1000) : 0;
+            var estimatedPromptTokens = Math.ceil(prompt.length / 4);
+            var prefillSpeed = ttft > 0 ? estimatedPromptTokens / (ttft / 1000) : 0;
+
+            return {
+                response: fullResponse,
+                ttft: ttft,
+                totalTime: totalTime,
+                decodeTime: decodeTime,
+                tokenCount: tokenCount,
+                tokensPerSec: tokensPerSec,
+                estimatedPromptTokens: estimatedPromptTokens,
+                prefillSpeed: prefillSpeed,
+                responseLength: fullResponse.length,
+            };
+        }
+
+        
         async function initModel() {
-            const modelLoadStart = performance.now();
+            var modelLoadStart = performance.now();
+
+            var storeBefore = 0;
+            try {
+                var est = await navigator.storage.estimate();
+                storeBefore = est.usage;
+            } catch (e) {}
+
             statusEl.textContent = "Downloading model... (this takes a few minutes the first time)";
 
-            await engine.reload("Llama-3.1-8B-Instruct-q4f32_1-MLC", {
+            await engine.reload(MODEL_ID, {
                 initProgressCallback: (progress) => {
                     statusEl.textContent = progress.text;
                 }
             });
 
-            const modelLoadEnd = performance.now();
-            const modelLoadTime = ((modelLoadEnd - modelLoadStart) / 1000).toFixed(1);
+            var modelLoadEnd = performance.now();
+            modelLoadTimeSec = ((modelLoadEnd - modelLoadStart) / 1000).toFixed(1);
 
-            statusEl.textContent = "Model ready! (loaded in " + modelLoadTime + " seconds)";
+            var storeAfter = 0;
+            try {
+                var est2 = await navigator.storage.estimate();
+                storeAfter = est2.usage;
+            } catch (e) {}
+
+            var downloadedMB = Math.round((storeAfter - storeBefore) / 1024 / 1024);
+            loadedFromCache = downloadedMB < 100;
+
+            statusEl.textContent = "Model ready! (loaded in " + modelLoadTimeSec + "s" + (loadedFromCache ? " - from cache" : " - fresh download") + ")";
+            modelInfoEl.textContent = "Model: " + MODEL_ID + " | Size: ~" + MODEL_SIZE_MB + "MB | Params: " + MODEL_PARAMS + " | Quant: " + QUANTIZATION;
+
             sendBtn.disabled = false;
+            benchmarkBtn.disabled = false;
+
+            systemMetricsEl.innerHTML = await getSystemMetrics();
         }
 
+    
         sendBtn.addEventListener("click", async () => {
-            const userMessage = promptEl.value;
+            var userMessage = promptEl.value;
             if (!userMessage) return;
 
             sendBtn.disabled = true;
+            benchmarkBtn.disabled = true;
             responseEl.textContent = "";
             metricsEl.textContent = "Generating...";
 
-            const startTime = performance.now();
-            let firstTokenTime = null;
-            let tokenCount = 0;
+            var startTime = performance.now();
+            var firstTokenTime = null;
+            var tokenCount = 0;
 
-            const reply = await engine.chat.completions.create({
+            var reply = await engine.chat.completions.create({
                 messages: [{ role: "user", content: userMessage }],
                 temperature: 0.0,
                 max_tokens: 256,
                 stream: true,
             });
 
-            for await (const chunk of reply) {
-                const token = chunk.choices[0]?.delta?.content || "";
+            for await (var chunk of reply) {
+                var token = chunk.choices[0]?.delta?.content || "";
                 if (token && !firstTokenTime) {
                     firstTokenTime = performance.now();
                 }
@@ -88,22 +329,200 @@
                 }
             }
 
-            const endTime = performance.now();
+            var endTime = performance.now();
 
-            const ttft = firstTokenTime - startTime;
-            const totalTime = endTime - startTime;
-            const decodeTime = endTime - firstTokenTime;
-            const tokensPerSec = tokenCount / (decodeTime / 1000);
+            var ttft = firstTokenTime - startTime;
+            var totalTime = endTime - startTime;
+            var decodeTime = endTime - firstTokenTime;
+            var tokensPerSec = tokenCount / (decodeTime / 1000);
+            var estimatedPromptTokens = Math.ceil(userMessage.length / 4);
+            var prefillSpeed = estimatedPromptTokens / (ttft / 1000);
 
-            metricsEl.innerHTML = 
+            metricsEl.innerHTML =
                 "<b>Performance Metrics:</b><br>" +
                 "Time to First Token (TTFT): " + ttft.toFixed(0) + " ms<br>" +
                 "Tokens Per Second (TPS): " + tokensPerSec.toFixed(1) + " tokens/sec<br>" +
                 "Total Tokens Generated: " + tokenCount + "<br>" +
                 "Total Response Time: " + (totalTime / 1000).toFixed(2) + " seconds<br>" +
-                "Decode Time: " + (decodeTime / 1000).toFixed(2) + " seconds";
+                "Decode Time: " + (decodeTime / 1000).toFixed(2) + " seconds<br>" +
+                "Estimated Prompt Tokens: " + estimatedPromptTokens + "<br>" +
+                "Prefill Speed: " + prefillSpeed.toFixed(1) + " tokens/sec<br>" +
+                "Response Length: " + responseEl.textContent.length + " characters";
+
+            systemMetricsEl.innerHTML = await getSystemMetrics();
 
             sendBtn.disabled = false;
+            benchmarkBtn.disabled = false;
+        });
+
+        //all queries benchmark
+        benchmarkBtn.addEventListener("click", async () => {
+            sendBtn.disabled = true;
+            benchmarkBtn.disabled = true;
+            progressBar.style.display = "block";
+            progressFill.style.width = "0%";
+            responseEl.textContent = "";
+            metricsEl.textContent = "Running benchmark... do not close this tab.";
+            allBenchmarkResults = [];
+
+            var benchmarkStartTime = performance.now();
+
+            for (var i = 0; i < TEST_PROMPTS.length; i++) {
+                var test = TEST_PROMPTS[i];
+                var progress = ((i + 1) / TEST_PROMPTS.length * 100).toFixed(0);
+                progressFill.style.width = progress + "%";
+                metricsEl.textContent = "Running query " + (i + 1) + " of " + TEST_PROMPTS.length + " (" + test.id + ": " + test.category + ")...";
+
+                try {
+                    var result = await runQuery(test.prompt);
+                    allBenchmarkResults.push({
+                        id: test.id,
+                        category: test.category,
+                        prompt: test.prompt,
+                        expected: test.expected,
+                        check: test.check,
+                        response: result.response,
+                        ttft: result.ttft,
+                        totalTime: result.totalTime,
+                        decodeTime: result.decodeTime,
+                        tokenCount: result.tokenCount,
+                        tokensPerSec: result.tokensPerSec,
+                        estimatedPromptTokens: result.estimatedPromptTokens,
+                        prefillSpeed: result.prefillSpeed,
+                        responseLength: result.responseLength,
+                    });
+                } catch (err) {
+                    allBenchmarkResults.push({
+                        id: test.id,
+                        category: test.category,
+                        prompt: test.prompt,
+                        expected: test.expected,
+                        check: test.check,
+                        response: "ERROR: " + err.message,
+                        ttft: 0, totalTime: 0, decodeTime: 0, tokenCount: 0,
+                        tokensPerSec: 0, estimatedPromptTokens: 0, prefillSpeed: 0, responseLength: 0,
+                    });
+                }
+            }
+
+            var benchmarkEndTime = performance.now();
+            var totalBenchmarkTime = ((benchmarkEndTime - benchmarkStartTime) / 1000).toFixed(1);
+            var queriesPerMinute = (TEST_PROMPTS.length / (totalBenchmarkTime / 60)).toFixed(1);
+
+            displayBenchmarkResults(totalBenchmarkTime, queriesPerMinute);
+
+            progressBar.style.display = "none";
+            sendBtn.disabled = false;
+            benchmarkBtn.disabled = false;
+        });
+
+        // for displaying results
+        function displayBenchmarkResults(totalTime, qpm) {
+            var ttfts = allBenchmarkResults.map(r => r.ttft).filter(t => t > 0);
+            var tpsList = allBenchmarkResults.map(r => r.tokensPerSec).filter(t => t > 0);
+            var tokenCounts = allBenchmarkResults.map(r => r.tokenCount);
+            var prefillSpeeds = allBenchmarkResults.map(r => r.prefillSpeed).filter(p => p > 0);
+
+            var avgTTFT = ttfts.reduce((a, b) => a + b, 0) / ttfts.length;
+            var minTTFT = Math.min(...ttfts);
+            var maxTTFT = Math.max(...ttfts);
+            var avgTPS = tpsList.reduce((a, b) => a + b, 0) / tpsList.length;
+            var minTPS = Math.min(...tpsList);
+            var maxTPS = Math.max(...tpsList);
+            var totalTokens = tokenCounts.reduce((a, b) => a + b, 0);
+            var avgPrefill = prefillSpeeds.reduce((a, b) => a + b, 0) / prefillSpeeds.length;
+
+            //Thermal throttling check
+            var first5TPS = tpsList.slice(0, 5).reduce((a, b) => a + b, 0) / Math.min(5, tpsList.length);
+            var last5TPS = tpsList.slice(-5).reduce((a, b) => a + b, 0) / Math.min(5, tpsList.length);
+            var throttleDrop = ((first5TPS - last5TPS) / first5TPS * 100).toFixed(1);
+
+            benchmarkSummary.style.display = "block";
+            benchmarkSummary.innerHTML =
+                "<b>===== BENCHMARK SUMMARY =====</b><br>" +
+                "Model: " + MODEL_ID + "<br>" +
+                "Date: " + new Date().toISOString() + "<br><br>" +
+
+                "<b>--- LATENCY METRICS ---</b><br>" +
+                "Avg TTFT: " + avgTTFT.toFixed(0) + " ms<br>" +
+                "Min TTFT: " + minTTFT.toFixed(0) + " ms<br>" +
+                "Max TTFT: " + maxTTFT.toFixed(0) + " ms<br><br>" +
+
+                "<b>--- THROUGHPUT METRICS ---</b><br>" +
+                "Avg Tokens/Sec: " + avgTPS.toFixed(1) + "<br>" +
+                "Min Tokens/Sec: " + minTPS.toFixed(1) + "<br>" +
+                "Max Tokens/Sec: " + maxTPS.toFixed(1) + "<br>" +
+                "Avg Prefill Speed: " + avgPrefill.toFixed(1) + " tokens/sec<br>" +
+                "Queries Per Minute: " + qpm + "<br>" +
+                "Total Tokens Generated: " + totalTokens + "<br><br>" +
+
+                "<b>--- RESOURCE METRICS ---</b><br>" +
+                "Model Size: ~" + MODEL_SIZE_MB + " MB<br>" +
+                "Quantization: " + QUANTIZATION + "<br>" +
+                "Model Load Time: " + modelLoadTimeSec + " s<br>" +
+                "Loaded From Cache: " + (loadedFromCache ? "Yes" : "No") + "<br>" +
+                "Total Benchmark Time: " + totalTime + " s<br><br>" +
+
+                "<b>--- THERMAL THROTTLING ---</b><br>" +
+                "First 5 queries avg TPS: " + first5TPS.toFixed(1) + "<br>" +
+                "Last 5 queries avg TPS: " + last5TPS.toFixed(1) + "<br>" +
+                "Performance Drop: " + throttleDrop + "%<br><br>" +
+
+                "<b>--- COST COMPARISON (for " + TEST_PROMPTS.length + " queries) ---</b><br>" +
+                "Browser (WebGPU): $0.00<br>" +
+                "OpenAI GPT-4o-mini: ~$" + (totalTokens * 0.00000060).toFixed(4) + "<br>" +
+                "Anthropic Claude Haiku: ~$" + (totalTokens * 0.00000125).toFixed(4) + "<br>" +
+                "Projected cost for 10,000 queries (cloud): ~$" + (totalTokens * 0.00000060 * 500).toFixed(2) + " - $" + (totalTokens * 0.00000125 * 500).toFixed(2) + "<br>";
+
+            //Per-query table
+            var tableHTML = "<table>";
+            tableHTML += "<tr><th>ID</th><th>Category</th><th>TTFT (ms)</th><th>TPS</th><th>Tokens</th><th>Total (s)</th><th>Decode (s)</th><th>Prefill (t/s)</th><th>Resp Chars</th><th>Response Preview</th><th>Expected</th></tr>";
+
+            allBenchmarkResults.forEach(function(r) {
+                var preview = r.response.substring(0, 60).replace(/\n/g, " ") + (r.response.length > 60 ? "..." : "");
+                tableHTML += "<tr>";
+                tableHTML += "<td>" + r.id + "</td>";
+                tableHTML += "<td>" + r.category + "</td>";
+                tableHTML += "<td>" + r.ttft.toFixed(0) + "</td>";
+                tableHTML += "<td>" + r.tokensPerSec.toFixed(1) + "</td>";
+                tableHTML += "<td>" + r.tokenCount + "</td>";
+                tableHTML += "<td>" + (r.totalTime / 1000).toFixed(2) + "</td>";
+                tableHTML += "<td>" + (r.decodeTime / 1000).toFixed(2) + "</td>";
+                tableHTML += "<td>" + r.prefillSpeed.toFixed(1) + "</td>";
+                tableHTML += "<td>" + r.responseLength + "</td>";
+                tableHTML += "<td>" + preview + "</td>";
+                tableHTML += "<td>" + r.expected + "</td>";
+                tableHTML += "</tr>";
+            });
+
+            tableHTML += "</table>";
+            benchmarkResults.style.display = "block";
+            benchmarkResults.innerHTML = "<br><b>Per-Query Results:</b><br>" + tableHTML;
+
+            metricsEl.textContent = "Benchmark complete! " + TEST_PROMPTS.length + " queries in " + totalTime + " seconds.";
+            exportBtn.style.display = "inline-block";
+        }
+
+        //for csv export
+        exportBtn.addEventListener("click", function() {
+            var csv = "ID,Category,Prompt,Expected,TTFT_ms,TPS,Tokens,TotalTime_s,DecodeTime_s,PrefillSpeed,ResponseLength,Response\n";
+
+            allBenchmarkResults.forEach(function(r) {
+                var cleanResponse = r.response.replace(/"/g, '""').replace(/\n/g, " ");
+                var cleanPrompt = r.prompt.replace(/"/g, '""');
+                csv += '"' + r.id + '","' + r.category + '","' + cleanPrompt + '","' + r.expected + '",' +
+                    r.ttft.toFixed(0) + "," + r.tokensPerSec.toFixed(1) + "," + r.tokenCount + "," +
+                    (r.totalTime / 1000).toFixed(2) + "," + (r.decodeTime / 1000).toFixed(2) + "," +
+                    r.prefillSpeed.toFixed(1) + "," + r.responseLength + ',"' + cleanResponse + '"\n';
+            });
+
+            var blob = new Blob([csv], { type: "text/csv" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "benchmark_" + MODEL_ID + "_" + new Date().toISOString().slice(0, 10) + ".csv";
+            a.click();
+            URL.revokeObjectURL(url);
         });
 
         initModel();
