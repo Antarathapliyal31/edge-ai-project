@@ -439,16 +439,16 @@
 
             benchmarkSummary.style.display = "block";
             benchmarkSummary.innerHTML =
-                "<b>BENCHMARK SUMMARY/b><br>" +
+                "<b>BENCHMARK SUMMARY</b><br>" +
                 "Model: " + MODEL_ID + "<br>" +
                 "Date: " + new Date().toISOString() + "<br><br>" +
 
-                "<b>LATENCY METRICS/b><br>" +
+                "<b>LATENCY METRICS</b><br>" +
                 "Avg TTFT: " + avgTTFT.toFixed(0) + " ms<br>" +
                 "Min TTFT: " + minTTFT.toFixed(0) + " ms<br>" +
                 "Max TTFT: " + maxTTFT.toFixed(0) + " ms<br><br>" +
 
-                "<b>THROUGHPUT METRICS/b><br>" +
+                "<b>THROUGHPUT METRICS</b><br>" +
                 "Avg Tokens/Sec: " + avgTPS.toFixed(1) + "<br>" +
                 "Min Tokens/Sec: " + minTPS.toFixed(1) + "<br>" +
                 "Max Tokens/Sec: " + maxTPS.toFixed(1) + "<br>" +
