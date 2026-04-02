@@ -1,0 +1,66 @@
+id,category,prompt,expected,response,ttft_ms,tokens_per_sec,token_count,total_time_s,decode_time_s,response_length,cost_usd,model,provider,error
+Q01,Factual-Simple,What is the capital of France?,Paris,The capital of France is **Paris**.,735.0,9539.7,6,0.74,0.0,35,3e-06,gemini-2.5-flash,Google,
+Q02,Factual-Simple,What planet is closest to the Sun?,Mercury,The planet closest to the Sun is **Mercury**.,1728.0,14678.2,8,1.73,0.0,45,4e-06,gemini-2.5-flash,Google,
+Q03,Factual-Simple,Who wrote the play Romeo and Juliet?,Shakespeare,The play *Romeo and Juliet* was written by **William Shakespeare**.,721.0,41610.2,10,0.72,0.0,67,5e-06,gemini-2.5-flash,Google,
+Q04,Factual-Moderate,What is photosynthesis?,Plants convert sunlight to glucose/oxygen,Photosynthesis is a fundamental biological process by which **plants,2469.0,14380.5,9,2.47,0.0,68,4e-06,gemini-2.5-flash,Google,
+Q05,Factual-Moderate,Explain what HTTP status code 404 means.,Not Found,The HTTP status code **404,1751.0,8878.7,5,1.75,0.0,26,3e-06,gemini-2.5-flash,Google,
+Q06,Technical-CS,What is the difference between a stack and a queue in data structures?,"Stack=LIFO, Queue=FIFO",The fundamental difference between a **stack** and a **,1851.0,18148.4,9,1.85,0.0,55,5e-06,gemini-2.5-flash,Google,
+Q07,Technical-CS,What is the time complexity of binary search?,O(log n),The time complexity of binary search is **O,1848.0,18396.1,8,1.85,0.0,43,4e-06,gemini-2.5-flash,Google,
+Q08,Technical-ML,What is PCA in machine learning?,"Principal Component Analysis, dimensionality reduction",**Principal Component Analysis (PCA)** is a fundamental,1631.0,40891.5,7,1.63,0.0,55,4e-06,gemini-2.5-flash,Google,
+Q09,Technical-ML,What is overfitting in machine learning?,"Model learns training data too well, poor on new data",**Overfitting** in machine learning is a phenomenon where,1786.0,20776.7,8,1.79,0.0,57,4e-06,gemini-2.5-flash,Google,
+Q10,Reasoning-Math,"If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?",150 miles,To find the distance the train will travel,1520.0,19086.7,8,1.52,0.0,42,5e-06,gemini-2.5-flash,Google,
+Q11,Reasoning-Math,What is 15% of 200?,30,To find 15% of 200,1494.0,12795.3,5,1.49,0.0,18,2e-06,gemini-2.5-flash,Google,
+Q12,Reasoning-Logic,"If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?",No,"No, we cannot conclude that some roses fade",1758.0,24174.7,8,1.76,0.0,43,6e-06,gemini-2.5-flash,Google,
+Q13,Reasoning-Logic,A farmer has 17 sheep. All but 9 die. How many sheep are left?,9,There are **9** sheep left.,907.0,5329.5,5,0.91,0.0,27,3e-06,gemini-2.5-flash,Google,
+Q14,Code,Write a Python function that takes a list of numbers and returns the largest number.,Working Python code,"Okay, here are a few ways to",1695.0,26594.3,7,1.69,0.0,28,5e-06,gemini-2.5-flash,Google,
+Q15,Code,Write a Python function to check if a string is a palindrome.,Working Python code,"Okay, here are a few Python functions to check if",1634.0,27042.6,10,1.63,0.0,49,5e-06,gemini-2.5-flash,Google,
+Q16,Summarization,Summarize the concept of supply and demand in economics in 2-3 sentences.,Price relationship with supply/demand,Supply and demand are fundamental economic principles describing the relationship between the availability of a product or service and the desire for,2060.0,127804.3,22,2.06,0.0,149,1.1e-05,gemini-2.5-flash,Google,
+Q17,Instruction,List exactly 3 programming languages that start with the letter P.,Exactly 3 languages starting with P,"Here are 3 programming languages that start with the letter P:
+
+1.  **Python**
+2.  **PHP**
+3.  **Pascal**",745.0,192.9,17,0.83,0.09,105,8e-06,gemini-2.5-flash,Google,
+Q18,Instruction,Explain what an API is in exactly one sentence.,One sentence about software communication,An API (Application Programming Interface) is a,1821.0,17189.8,7,1.82,0.0,47,4e-06,gemini-2.5-flash,Google,
+Q19,Long-Response,"Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.","Covers DNS, TCP/IP, HTTP","The internet is a vast, global network of interconnected",1793.0,27858.8,9,1.79,0.0,56,5e-06,gemini-2.5-flash,Google,
+Q20,Long-Response,Compare and contrast supervised learning and unsupervised learning in machine learning.,Labeled vs unlabeled data,Supervised learning and unsupervised learning are two fundamental paradigms,1850.0,24197.9,9,1.85,0.0,75,6e-06,gemini-2.5-flash,Google,
+Q01,Factual-Simple,What is the capital of France?,Paris,The capital of France is **Paris**.,1098.0,3350.1,6,1.1,0.0,35,3e-06,gemini-3-flash-preview,Google,
+Q02,Factual-Simple,What planet is closest to the Sun?,Mercury,**Mercury** is the planet closest to the Sun.,1104.0,5830.5,8,1.11,0.0,45,4e-06,gemini-3-flash-preview,Google,
+Q03,Factual-Simple,Who wrote the play Romeo and Juliet?,Shakespeare,**William Shakespeare** wrote the play *Romeo and Juliet*. It is believed to have been written between 1591 and 1595.,1007.0,396.3,19,1.05,0.05,117,8e-06,gemini-3-flash-preview,Google,
+Q04,Factual-Moderate,What is photosynthesis?,Plants convert sunlight to glucose/oxygen,**Photosynthesis** is the process used by plants,1774.0,118.7,7,1.83,0.06,48,3e-06,gemini-3-flash-preview,Google,
+Q05,Factual-Moderate,Explain what HTTP status code 404 means.,Not Found,"The HTTP status code **404 Not Found** is an error message sent by a web server to a browser (like Chrome, Safari, or Firefox) indicating that the server could not find the specific page or file requested by the user.
+
+Here is a breakdown of what it means, why it happens, and how to fix it.
+
+---
+
+### 1. What does it actually mean?
+In the world of HTTP (Hypertext Transfer Protocol), status codes are divided",1583.0,169.7,76,2.03,0.45,409,3.1e-05,gemini-3-flash-preview,Google,
+Q06,Technical-CS,What is the difference between a stack and a queue in data structures?,"Stack=LIFO, Queue=FIFO",The primary difference between a stack,1976.0,4566.5,6,1.98,0.0,38,4e-06,gemini-3-flash-preview,Google,
+Q07,Technical-CS,What is the time complexity of binary search?,O(log n),The time complexity of binary search is **$O(\,2184.0,7790.7,8,2.18,0.0,46,4e-06,gemini-3-flash-preview,Google,
+Q08,Technical-ML,What is PCA in machine learning?,"Principal Component Analysis, dimensionality reduction","**PCA**, or **Principal Component Analysis**, is",1738.0,3869.3,6,1.74,0.0,48,3e-06,gemini-3-flash-preview,Google,
+Q09,Technical-ML,What is overfitting in machine learning?,"Model learns training data too well, poor on new data","In simple terms, **over",2269.0,2981.0,4,2.27,0.0,23,3e-06,gemini-3-flash-preview,Google,
+Q10,Reasoning-Math,"If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?",150 miles,"To find the distance, you multiply the speed by the time:
+
+**Distance = Speed × Time**
+
+1.  **Speed:** 60 mph
+2.  **Time:** 2.5 hours
+3.  **Calculation:** 60 × 2.5 = 150
+
+The train will travel **150 miles**.",1233.0,208.0,38,1.42,0.18,207,1.7e-05,gemini-3-flash-preview,Google,
+Q11,Reasoning-Math,What is 15% of 200?,30,"15% of 200 is **30**.
+
+",1685.0,129.3,5,1.72,0.04,23,2e-06,gemini-3-flash-preview,Google,
+Q12,Reasoning-Logic,"If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?",No,"No, we **cannot** conclude that some",2009.0,4288.7,6,2.01,0.0,36,5e-06,gemini-3-flash-preview,Google,
+Q13,Reasoning-Logic,A farmer has 17 sheep. All but 9 die. How many sheep are left?,9,"There are **9** sheep left. 
+
+The phrase ""all but 9 die"" means that 9 sheep survived and the rest died.",1236.0,177.9,20,1.35,0.11,103,1e-05,gemini-3-flash-preview,Google,
+Q14,Code,Write a Python function that takes a list of numbers and returns the largest number.,Working Python code,There are two common ways to do this,1735.0,4253.3,8,1.74,0.0,36,5e-06,gemini-3-flash-preview,Google,
+Q15,Code,Write a Python function to check if a string is a palindrome.,Working Python code,Here are a few ways to check if a string is,3700.0,188.5,11,3.76,0.06,43,6e-06,gemini-3-flash-preview,Google,
+Q16,Summarization,Summarize the concept of supply and demand in economics in 2-3 sentences.,Price relationship with supply/demand,Supply and demand is the fundamental economic model,2092.0,7443.3,8,2.09,0.0,51,5e-06,gemini-3-flash-preview,Google,
+Q17,Instruction,List exactly 3 programming languages that start with the letter P.,Exactly 3 languages starting with P,"1. Python
+2. PHP
+3. Perl",1149.0,120.5,6,1.2,0.05,24,4e-06,gemini-3-flash-preview,Google,
+Q18,Instruction,Explain what an API is in exactly one sentence.,One sentence about software communication,An API is a set of rules and protocols,1871.0,3038.6,9,1.87,0.0,38,5e-06,gemini-3-flash-preview,Google,
+Q19,Long-Response,"Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.","Covers DNS, TCP/IP, HTTP",To understand how the internet works,2067.0,8864.3,6,2.07,0.0,36,4e-06,gemini-3-flash-preview,Google,
+Q20,Long-Response,Compare and contrast supervised learning and unsupervised learning in machine learning.,Labeled vs unlabeled data,Supervised and unsupervised learning are,1957.0,2767.1,5,1.96,0.0,40,4e-06,gemini-3-flash-preview,Google,
