@@ -1,0 +1,693 @@
+id,category,prompt,expected,response,ttft_ms,tokens_per_sec,token_count,total_time_s,decode_time_s,response_length,cost_usd,model,provider,error
+Q01,Factual-Simple,What is the capital of France?,Paris,The capital of France is Paris.,521.0,393.7,6,0.54,0.02,31,3e-05,claude-haiku-4-5-20251001,Anthropic,
+Q02,Factual-Simple,What planet is closest to the Sun?,Mercury,Mercury is the closest planet to the Sun.,658.0,6605.2,8,0.66,0.0,41,3.8e-05,claude-haiku-4-5-20251001,Anthropic,
+Q03,Factual-Simple,Who wrote the play Romeo and Juliet?,Shakespeare,"William Shakespeare wrote Romeo and Juliet. It was written early in his career, likely between 1594 and 1596, and remains one of his most famous and frequently performed works.",399.0,84.2,29,0.74,0.34,176,0.000123,claude-haiku-4-5-20251001,Anthropic,
+Q04,Factual-Moderate,What is photosynthesis?,Plants convert sunlight to glucose/oxygen,"# Photosynthesis
+
+Photosynthesis is the process by which plants, algae, and some bacteria convert light energy (usually from the sun) into chemical energy stored in glucose (sugar).
+
+## The Basic Equation
+
+**Light energy + Water + Carbon dioxide → Glucose + Oxygen**
+
+## Key Points
+
+- **Location**: Occurs mainly in plant leaves, specifically in chloroplasts
+- **Pigment**: Chlorophyll (the green pigment) captures light energy
+- **Inputs**: Sunlight, water, and carbon dioxide from the air
+- **Outputs**: Glucose (food for the plant) and oxygen (released as a byproduct)
+
+## Why It Matters
+
+- **For plants**: Provides energy and building blocks for growth
+- **For life on Earth**: Produces most of the oxygen we breathe and forms the base of food chains
+- **For the environment**: Removes carbon dioxide from the atmosphere
+
+## Two Main Stages
+
+1. **Light-dependent reactions**: Occur in sunlight; capture light energy
+2. **Light-independent reactions** (Calvin cycle): Produce glucose using the energy captured in stage 1
+
+Photosynthesis is one of the most important biological processes on Earth, sustaining nearly all life.",496.0,78.4,174,2.72,2.22,1127,0.0007,claude-haiku-4-5-20251001,Anthropic,
+Q05,Factual-Moderate,Explain what HTTP status code 404 means.,Not Found,"# HTTP Status Code 404
+
+**404 means ""Not Found.""**
+
+## What It Means
+
+The server received your request but couldn't find the requested resource. The webpage, file, or API endpoint you're looking for doesn't exist at that location.
+
+## Common Scenarios
+
+- **Visiting a deleted webpage** — The page used to exist but has been removed
+- **Typing a wrong URL** — A typo in the web address
+- **Broken links** — A link points to a resource that no longer exists
+- **API endpoint doesn't exist** — Requesting data from an endpoint that isn't available
+
+## Key Points
+
+- **Client error** — It's a 4xx status code, meaning the problem is with the request, not the server
+- **Not the server's fault** — The server is working fine; the resource simply isn't there
+- **Permanent or temporary** — The resource might be gone forever or just temporarily unavailable
+
+## Example
+
+If you visit `example.com/old-page` and that page was deleted, the server responds with a 404 status code, often displaying an error page saying ""Page Not Found.""",454.0,67.4,179,3.11,2.66,1026,0.000724,claude-haiku-4-5-20251001,Anthropic,
+Q06,Technical-CS,What is the difference between a stack and a queue in data structures?,"Stack=LIFO, Queue=FIFO","# Stack vs Queue
+
+## Key Differences
+
+| Feature | Stack | Queue |
+|---------|-------|-------|
+| **Order** | LIFO (Last In, First Out) | FIFO (First In, First Out) |
+| **Insertion** | Top (push) | Rear (enqueue) |
+| **Removal** | Top (pop) | Front (dequeue) |
+| **Use Case** | Undo/redo, recursion | Task scheduling, printing |
+
+## Visual Comparison
+
+**Stack** (like a plate stack):
+```
+Push 3 → [3]
+Push 2 → [3, 2]
+Push 1 → [3, 2, 1]
+Pop    → [3, 2]  (removes 1 first)
+```
+
+**Queue** (like a line):
+```
+Enqueue 1 → [1]
+Enqueue 2 → [1, 2]
+Enqueue 3 → [1, 2, 3]
+Dequeue   → [2, 3]  (removes 1 first)
+```
+
+## Common Examples
+
+**Stack:**
+- Browser back button
+- Function call stack
+- Undo functionality
+- Expression evaluation
+
+**Queue:**
+- Print job queue
+- Customer service lines
+- Task scheduling
+- BFS (Breadth-First Search)
+
+Both are fundamental data structures with O(1) time complexity for their primary operations.",423.0,77.5,171,2.63,2.21,918,0.000698,claude-haiku-4-5-20251001,Anthropic,
+Q07,Technical-CS,What is the time complexity of binary search?,O(log n),"# Binary Search Time Complexity
+
+## **O(log n)** - Logarithmic Time
+
+Binary search has a **logarithmic time complexity** of **O(log n)**, where n is the number of elements in the sorted array.
+
+## Why O(log n)?
+
+Binary search works by repeatedly dividing the search space in half:
+
+```
+Array size: 16 → 8 → 4 → 2 → 1
+Steps needed: log₂(16) = 4 steps
+```
+
+With each comparison, you eliminate half of the remaining elements, so the maximum number of steps is log₂(n).
+
+## Example
+
+| Array Size | Max Comparisons |
+|-----------|-----------------|
+| 10        | ~4              |
+| 100       | ~7              |
+| 1,000     | ~10             |
+| 1,000,000 | ~20             |
+
+## Complexity Breakdown
+
+| Operation | Complexity |
+|-----------|-----------|
+| **Best case** | O(1) - element found at middle |
+| **Average case** | O(log n) |
+| **Worst case** | O(log n) - element at end or not found |
+| **Space** | O(1) - iterative; O(log n) - recursive |
+
+## Key Requirement
+
+⚠️ **The array must be sorted** for binary search to work correctly.",469.0,72.1,182,2.99,2.52,1038,0.000737,claude-haiku-4-5-20251001,Anthropic,
+Q08,Technical-ML,What is PCA in machine learning?,"Principal Component Analysis, dimensionality reduction","# Principal Component Analysis (PCA)
+
+PCA is an **unsupervised dimensionality reduction technique** that transforms high-dimensional data into a lower-dimensional space while preserving as much variance (information) as possible.
+
+## Key Concepts
+
+### What It Does
+- Identifies the directions (principal components) in your data where variance is greatest
+- Projects data onto these new axes, reducing the number of features
+- Each principal component is a linear combination of original features
+
+### Why Use It?
+- **Reduce dimensionality** - fewer features to work with
+- **Remove noise** - drops low-variance components
+- **Visualization** - project to 2D or 3D for plotting
+- **Speed up training** - fewer features = faster models
+- **Handle multicollinearity** - creates uncorrelated features
+
+## How It Works (Simplified)
+
+1. **Standardize** the data (mean = 0, std = 1)
+2. **Calculate covariance matrix** to understand feature relationships
+3. **Find eigenvectors & eigenvalues** - eigenvectors are principal components, eigenvalues show their importance
+4. **Sort by variance** - rank components by how much variance they explain
+5. **Project data** onto top k components
+
+## Simple Example
+
+```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Standardize data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Apply PCA (reduce to 2 dimensions)
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X_scaled)
+
+# Check variance explained
+print(pca.explained_variance_ratio_)  # % variance per component
+```
+
+## Important Notes
+
+- **Linear only** - captures linear relationships, not non-linear patterns
+- **Interpretability trade-off** - reduced dimensions are harder to interpret
+- **Standardization matters** - always scale your data first
+
+PCA is foundational in machine learning and works well for preprocessing before classification or clustering tasks.",448.0,74.4,274,4.13,3.69,1930,0.001102,claude-haiku-4-5-20251001,Anthropic,
+Q09,Technical-ML,What is overfitting in machine learning?,"Model learns training data too well, poor on new data","# Overfitting in Machine Learning
+
+Overfitting occurs when a model learns the **training data too well**, including its noise and peculiarities, rather than learning generalizable patterns. This causes poor performance on new, unseen data.
+
+## Key Characteristics
+
+- **High training accuracy** but **low test accuracy**
+- Model memorizes rather than learns underlying patterns
+- Performs well on training data, poorly on real-world data
+
+## Visual Example
+
+```
+Underfitting          Good Fit          Overfitting
+(High Bias)        (Balanced)        (High Variance)
+
+Simple line      Smooth curve      Wiggly line
+fits poorly      fits well         fits perfectly
+```
+
+## Common Causes
+
+- **Too complex model** (too many parameters)
+- **Too much training** (excessive epochs)
+- **Insufficient training data**
+- **Lack of regularization**
+- **Too many features** relative to samples
+
+## Solutions
+
+| Approach | Description |
+|----------|-------------|
+| **Regularization** | Add penalties (L1, L2) to reduce complexity |
+| **Cross-validation** | Test on multiple data splits |
+| **Early stopping** | Stop training when validation loss increases |
+| **More data** | Larger datasets reduce overfitting |
+| **Feature selection** | Use only relevant features |
+| **Simpler model** | Reduce model complexity |
+| **Dropout** | Randomly disable neurons (neural networks) |
+
+## Real-World Impact
+
+A model that overfits might achieve 99% accuracy on training data but only 70% on production data—making it unreliable for actual use.",420.0,70.0,223,3.61,3.19,1522,0.0009,claude-haiku-4-5-20251001,Anthropic,
+Q10,Reasoning-Math,"If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?",150 miles,"# Distance Calculation
+
+Using the formula: **Distance = Speed × Time**
+
+Distance = 60 mph × 2.5 hours = **150 miles**
+
+The train will travel 150 miles in 2.5 hours.",369.0,74.0,31,0.79,0.42,164,0.000139,claude-haiku-4-5-20251001,Anthropic,
+Q11,Reasoning-Math,What is 15% of 200?,30,"15% of 200 is **30**.
+
+(200 × 0.15 = 30)",655.0,393.9,10,0.68,0.03,40,4.3e-05,claude-haiku-4-5-20251001,Anthropic,
+Q12,Reasoning-Logic,"If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?",No,"# No, we cannot conclude that.
+
+Here's why:
+
+**The logical structure:**
+- All roses are flowers ✓
+- Some flowers fade quickly ✓
+- Therefore, some roses fade quickly? ✗
+
+**The problem:**
+
+The flowers that fade quickly could be an entirely different group—say, tulips or daisies—with no overlap with roses at all.
+
+**A concrete example:**
+- All roses are flowers ✓
+- Some flowers (tulips) fade quickly ✓
+- But roses might last a long time ✓
+
+This is logically consistent with both premises, yet contradicts the proposed conclusion.
+
+**What we'd need to conclude that some roses fade quickly:**
+We'd need to know that *some of the flowers that fade quickly are specifically roses*, not just that some flowers fade quickly somewhere in the category.
+
+This is a classic logical fallacy—the premises don't give us enough information to make the conclusion.",894.0,69.2,142,2.95,2.05,850,0.000588,claude-haiku-4-5-20251001,Anthropic,
+Q13,Reasoning-Logic,A farmer has 17 sheep. All but 9 die. How many sheep are left?,9,"9 sheep are left.
+
+The phrase ""all but 9 die"" means that all sheep except 9 die, so 9 survive.",715.0,226.1,20,0.8,0.09,94,9.2e-05,claude-haiku-4-5-20251001,Anthropic,
+Q14,Code,Write a Python function that takes a list of numbers and returns the largest number.,Working Python code,"# Python Function to Find the Largest Number
+
+Here are several ways to accomplish this:
+
+## 1. **Using the `max()` function (Simplest)**
+```python
+def find_largest(numbers):
+    """"""Returns the largest number in a list.""""""
+    return max(numbers)
+
+# Example usage
+print(find_largest([3, 7, 2, 9, 1]))  # Output: 9
+print(find_largest([-5, -2, -10]))    # Output: -2
+```
+
+## 2. **Using a loop (Manual approach)**
+```python
+def find_largest(numbers):
+    """"""Returns the largest number using a loop.""""""
+    if not numbers:
+        return None
+    
+    largest = numbers[0]
+    for num in numbers[1:]:
+        if num > largest:
+            largest = num
+    return largest
+
+# Example usage
+print(find_largest([3, 7, 2, 9, 1]))  # Output: 9
+```
+
+## 3. **Using `reduce()` (Functional approach)**
+```python
+from functools import reduce
+
+def find_largest(numbers):
+    """"""Returns the largest number using reduce.""""""
+    return reduce(lambda a, b: a if a > b else b, numbers)
+
+# Example usage
+print(find_largest([3, 7, 2, 9, 1]))  # Output: 9
+```
+
+## 4. **With error handling (Most robust)**
+```python
+def find_largest(numbers):
+    """"""Returns the largest number with error handling.""""""
+    if not numbers:
+        raise ValueError(""List cannot be empty"")
+    if not all(isinstance(n, (int, float)) for n in numbers):
+        raise TypeError(""All elements must be numbers"")
+    
+    return max(numbers)
+
+# Example usage
+try:
+    print(find_largest([3, 7, 2, 9, 1]))  # Output: 9
+    print(find_largest([]))               # Raises ValueError
+except (ValueError, TypeError) as e:
+    print(f""Error: {e}"")
+```
+
+## Comparison
+
+| Method | Pros | Cons |
+|--------|------|------|
+| `max()` | Simple, fast, readable | Less educational |
+| Loop | Educational, shows logic | More verbose |
+| `reduce()` | Functional style | Less readable |
+| With error handling | Production-ready | More code |
+
+**Recommendation:** Use `max()` for most cases. It's built-in, efficient, and Pythonic. Use the error-handling version for production code.",648.0,86.2,283,3.93,3.28,2014,0.001149,claude-haiku-4-5-20251001,Anthropic,
+Q15,Code,Write a Python function to check if a string is a palindrome.,Working Python code,"# Python Function to Check if a String is a Palindrome
+
+Here are several approaches, from simple to more sophisticated:
+
+## 1. **Simple Approach** (Most Readable)
+```python
+def is_palindrome(s):
+    """"""Check if a string is a palindrome (case-insensitive).""""""
+    s = s.lower()
+    return s == s[::-1]
+
+# Test cases
+print(is_palindrome(""racecar""))      # True
+print(is_palindrome(""hello""))        # False
+print(is_palindrome(""A man a plan a canal Panama""))  # False (spaces matter)
+```
+
+## 2. **Ignoring Spaces and Punctuation** (More Practical)
+```python
+def is_palindrome(s):
+    """"""Check if a string is a palindrome, ignoring spaces and punctuation.""""""
+    # Keep only alphanumeric characters and convert to lowercase
+    cleaned = ''.join(char.lower() for char in s if char.isalnum())
+    return cleaned == cleaned[::-1]
+
+# Test cases
+print(is_palindrome(""A man, a plan, a canal: Panama""))  # True
+print(is_palindrome(""race a car""))   # False
+print(is_palindrome(""0P""))           # False
+print(is_palindrome(""a.""))           # True
+```
+
+## 3. **Two-Pointer Approach** (Most Efficient for Large Strings)
+```python
+def is_palindrome(s):
+    """"""Check if a string is a palindrome using two pointers.""""""
+    # Clean the string
+    cleaned = ''.join(char.lower() for char in s if char.isalnum())
+    
+    # Use two pointers
+    left, right = 0, len(cleaned) - 1
+    
+    while left < right:
+        if cleaned[left] != cleaned[right]:
+            return False
+        left += 1
+        right -= 1
+    
+    return True
+
+# Test cases
+print(is_palindrome(""A man, a plan, a canal: Panama""))  # True
+print(is_palindrome(""race a car""))   # False
+```
+
+## 4. **In-Place Two-Pointer** (No Extra String Creation)
+```python
+def is_palindrome(s):
+    """"""Check if a string is a palindrome without creating a new string.""""""
+    left, right = 0, len(s) - 1
+    
+    while left < right:
+        # Skip non-alphanumeric characters from left
+        while left < right and not s[left].isalnum():
+            left += 1
+        
+        # Skip non-alphanumeric characters from right
+        while left < right and not s[right].isalnum():
+            right -= 1
+        
+        # Compare characters (case-insensitive)
+        if s[left].lower() != s[right].lower():
+            return False
+        
+        left += 1
+        right -= 1
+    
+    return True
+
+# Test cases
+print(is_palindrome(""A man, a plan, a canal: Panama""))  # True
+print(is_palindrome(""race a car""))   # False
+print(is_palindrome(""0P""))           # False
+```
+
+## 5. **Using Regular Expressions**
+```python
+import re
+
+def is_palindrome(s):
+    """"""Check if a string is a palindrome using regex.""""""
+    # Remove non-alphanumeric characters
+    cleaned = re.sub(r'[^a-z0-9]', '', s.lower())
+    return cleaned == cleaned[::-1]
+
+# Test cases
+print(is_palindrome(""A man, a plan, a canal: Panama""))  # True
+print(is_palindrome(""race a car""))   # False
+```
+
+## Comparison Table
+
+| Approach | Time | Space | Readability | Best For |
+|----------|------|-------|-------------|----------|
+| Simple reverse | O(n) | O(n) | ⭐⭐⭐⭐⭐ | Simple cases |
+| Clean + reverse | O(n) | O(n) | ⭐⭐⭐⭐ | Most use cases |
+| Two-pointer | O(n) | O(n) | ⭐⭐⭐ | Interviews |
+| In-place | O(n) | O(1) | ⭐⭐ | Large strings |
+| Regex | O(n) | O(n) | ⭐⭐⭐ | Complex patterns |
+
+## Recommendation
+For most cases, **approach #2** (clean + reverse) offers the best balance of readability and functionality. Use **approach #4** if memory efficiency is critical.",511.0,82.3,484,6.39,5.88,3464,0.001948,claude-haiku-4-5-20251001,Anthropic,
+Q16,Summarization,Summarize the concept of supply and demand in economics in 2-3 sentences.,Price relationship with supply/demand,"# Supply and Demand
+
+Supply and demand is a fundamental economic model explaining how prices are determined in a market. **Supply** refers to the quantity of goods producers are willing to offer at various prices, while **demand** refers to the quantity consumers are willing to buy. When demand is high and supply is low, prices tend to rise; conversely, when supply exceeds demand, prices typically fall until equilibrium is reached.",361.0,95.4,70,1.09,0.73,435,0.000294,claude-haiku-4-5-20251001,Anthropic,
+Q17,Instruction,List exactly 3 programming languages that start with the letter P.,Exactly 3 languages starting with P,"# Programming Languages Starting with P
+
+1. **Python**
+2. **PHP**
+3. **Pascal**",464.0,59.9,12,0.66,0.2,79,6.1e-05,claude-haiku-4-5-20251001,Anthropic,
+Q18,Instruction,Explain what an API is in exactly one sentence.,One sentence about software communication,An API is a set of rules and tools that allows different software applications to communicate with each other and share data or functionality.,392.0,68.4,24,0.74,0.35,142,0.000105,claude-haiku-4-5-20251001,Anthropic,
+Q19,Long-Response,"Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.","Covers DNS, TCP/IP, HTTP","# How the Internet Works
+
+## Overview
+The internet is a layered system where different protocols handle different jobs. When you visit a website, multiple technologies work together seamlessly.
+
+---
+
+## 1. TCP/IP: The Foundation
+
+**TCP/IP** is the fundamental protocol suite that enables all internet communication.
+
+### IP (Internet Protocol)
+- **Purpose**: Routes data packets across the internet
+- **How it works**: Assigns unique addresses (IP addresses like 192.168.1.1) to devices
+- **Versions**: IPv4 (older, limited addresses) and IPv6 (newer, vastly more addresses)
+- **Function**: Breaks messages into packets, labels them with source/destination addresses, and ensures they reach the right destination
+
+### TCP (Transmission Control Protocol)
+- **Purpose**: Ensures reliable, ordered delivery of data
+- **How it works**: 
+  - Establishes a connection before sending data (handshake)
+  - Breaks data into segments
+  - Reassembles segments in correct order at destination
+  - Detects lost packets and requests retransmission
+- **Analogy**: Like sending a registered letter—you confirm delivery and ensure nothing gets lost
+
+---
+
+## 2. DNS: Finding Websites
+
+**DNS (Domain Name System)** translates human-readable domain names into IP addresses.
+
+### The Problem It Solves
+You type `google.com`, but computers need an IP address like `142.251.41.14`
+
+### How DNS Works (Step-by-step)
+
+```
+1. You type ""google.com"" in your browser
+   ↓
+2. Browser queries your local DNS resolver (usually your ISP)
+   ↓
+3. Resolver queries root nameserver (""Where do I find .com domains?"")
+   ↓
+4. Root nameserver responds with TLD nameserver address
+   ↓
+5. Resolver queries TLD nameserver (""Where is google.com?"")
+   ↓
+6. TLD nameserver responds with authoritative nameserver address
+   ↓
+7. Resolver queries authoritative nameserver
+   ↓
+8. Authoritative nameserver responds with Google's IP address
+   ↓
+9. Resolver returns IP to your browser
+   ↓
+10. Browser connects to that IP address
+```
+
+### Key Points
+- **Caching**: Results are cached at multiple levels to speed up future lookups
+- **Distributed**: No single point of failure; thousands of nameservers worldwide
+- **Hierarchical**: Root → TLD (.com, .org) → Authoritative servers
+
+---
+
+## 3. HTTP/HTTPS: Web Communication
+
+**HTTP (HyperText Transfer Protocol)** is the protocol for transferring web pages and resources.
+
+### How HTTP Works
+
+```
+Client (Browser)                    Server (Website)
+     |                                    |
+     |------ HTTP Request ------->|
+     |  (GET /index.html)         |
+     |                            |
+     |<----- HTTP Response -------|
+     |  (200 OK + HTML content)   |
+     |                            |
+```
+
+### Request/Response Cycle
+
+**Request** (Browser → Server)
+```
+GET /index.html HTTP/1.1
+Host: example.com
+User-Agent: Chrome
+Accept: text/html
+```
+
+**Response** (Server → Browser)
+```
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1234
+
+<html>
+  <head>...</head>
+  <body>...</body>
+</html>
+```
+
+### Common HTTP Methods
+- **GET**: Retrieve data
+- **POST**: Submit data (forms, logins)
+- **PUT**: Update resources
+- **DELETE**: Remove resources
+
+### Status Codes
+- **2xx**: Success (200 OK)
+- **3xx**: Redirection (301 Moved)
+- **4xx**: Client error (404 Not Found)
+- **5xx**: Server error (500 Internal Error)
+
+### HTTPS: Secure HTTP
+- Adds **SSL/TLS encryption** on top of HTTP
+- Data is encrypted so only sender and receiver can read it
+- Indicated by the padlock icon in browsers
+- Essential for sensitive data (passwords, payments)
+
+---
+
+## Putting It All Together: A Complete Example
+
+```
+1. You type ""https://example.com"" in your browser
+
+2. DNS LOOKUP
+   → Browser asks: ""What's the IP for example.com?""
+   → DNS system responds: ""142.251.41.14""
+
+3. TCP CONNECTION
+   → Browser initiates TCP handshake with 142.251.41.14
+   → Connection established
+
+4. HTTPS HANDSHAKE
+   → Browser and server negotiate encryption
+   → Secure channel created
+
+5. HTTP REQUEST
+   → Browser sends: ""GET / HTTP/1.1""
+   → Server receives request
+
+6. HTTP RESPONSE
+   → Server sends back HTML, CSS, JavaScript files
+   → Browser receives encrypted data
+
+7. RENDERING
+   → Browser decrypts and displays the webpage
+```
+
+---
+
+## Key Takeaway
+
+The internet works through **layered cooperation**:
+- **DNS** finds the right computer
+- **TCP/IP** reliably delivers data between computers
+- **HTTP/HTTPS** defines how web browsers and servers communicate
+
+Each layer handles its specific job, allowing billions of devices to communicate reliably and securely.",392.0,68.1,664,10.14,9.75,4560,0.00267,claude-haiku-4-5-20251001,Anthropic,
+Q20,Long-Response,Compare and contrast supervised learning and unsupervised learning in machine learning.,Labeled vs unlabeled data,"# Supervised vs. Unsupervised Learning
+
+## Key Differences
+
+| Aspect | Supervised Learning | Unsupervised Learning |
+|--------|-------------------|----------------------|
+| **Training Data** | Labeled (input-output pairs) | Unlabeled (inputs only) |
+| **Goal** | Predict outputs for new inputs | Find patterns/structure in data |
+| **Feedback** | Explicit (correct answers provided) | No explicit feedback |
+| **Complexity** | Generally simpler to implement | More challenging to evaluate |
+
+## Supervised Learning
+
+**How it works:** Model learns from labeled examples to map inputs to known outputs.
+
+**Common algorithms:**
+- Linear/Logistic Regression
+- Decision Trees
+- Support Vector Machines (SVM)
+- Neural Networks
+
+**Applications:**
+- Email spam detection
+- Medical diagnosis
+- House price prediction
+- Image classification
+
+**Advantages:**
+- Clear performance metrics
+- Generally more accurate
+- Straightforward evaluation
+
+**Disadvantages:**
+- Requires labeled data (expensive/time-consuming)
+- Limited to learned patterns
+
+## Unsupervised Learning
+
+**How it works:** Model discovers hidden patterns without predefined labels.
+
+**Common algorithms:**
+- K-Means Clustering
+- Hierarchical Clustering
+- Principal Component Analysis (PCA)
+- Autoencoders
+
+**Applications:**
+- Customer segmentation
+- Anomaly detection
+- Recommendation systems
+- Data exploration
+
+**Advantages:**
+- Works with unlabeled data
+- Discovers unexpected patterns
+- More scalable
+
+**Disadvantages:**
+- Harder to validate results
+- Requires domain expertise to interpret
+- Less predictable outcomes
+
+## When to Use Each
+
+Choose **supervised learning** when you have labeled data and need specific predictions.
+
+Choose **unsupervised learning** when exploring data or labels are unavailable.",358.0,81.0,241,3.33,2.97,1768,0.000981,claude-haiku-4-5-20251001,Anthropic,

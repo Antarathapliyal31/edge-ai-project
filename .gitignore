@@ -1,0 +1,5 @@
+.env
+node_modules/
+# benchmark CSVs are intentionally tracked
+__pycache__/
+.DS_Store

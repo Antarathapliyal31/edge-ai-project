@@ -1,25 +1,476 @@
 id,category,prompt,expected,response,ttft_ms,tokens_per_sec,token_count,total_time_s,decode_time_s,response_length,cost_usd,model,provider,error
-Q01,Factual-Simple,What is the capital of France?,Paris,The capital of France is **Paris**.,735.0,9539.7,6,0.74,0.0,35,3e-06,gemini-2.5-flash,Google,
-Q02,Factual-Simple,What planet is closest to the Sun?,Mercury,The planet closest to the Sun is **Mercury**.,1728.0,14678.2,8,1.73,0.0,45,4e-06,gemini-2.5-flash,Google,
-Q03,Factual-Simple,Who wrote the play Romeo and Juliet?,Shakespeare,The play *Romeo and Juliet* was written by **William Shakespeare**.,721.0,41610.2,10,0.72,0.0,67,5e-06,gemini-2.5-flash,Google,
-Q04,Factual-Moderate,What is photosynthesis?,Plants convert sunlight to glucose/oxygen,Photosynthesis is a fundamental biological process by which **plants,2469.0,14380.5,9,2.47,0.0,68,4e-06,gemini-2.5-flash,Google,
-Q05,Factual-Moderate,Explain what HTTP status code 404 means.,Not Found,The HTTP status code **404,1751.0,8878.7,5,1.75,0.0,26,3e-06,gemini-2.5-flash,Google,
-Q06,Technical-CS,What is the difference between a stack and a queue in data structures?,"Stack=LIFO, Queue=FIFO",The fundamental difference between a **stack** and a **,1851.0,18148.4,9,1.85,0.0,55,5e-06,gemini-2.5-flash,Google,
-Q07,Technical-CS,What is the time complexity of binary search?,O(log n),The time complexity of binary search is **O,1848.0,18396.1,8,1.85,0.0,43,4e-06,gemini-2.5-flash,Google,
-Q08,Technical-ML,What is PCA in machine learning?,"Principal Component Analysis, dimensionality reduction",**Principal Component Analysis (PCA)** is a fundamental,1631.0,40891.5,7,1.63,0.0,55,4e-06,gemini-2.5-flash,Google,
-Q09,Technical-ML,What is overfitting in machine learning?,"Model learns training data too well, poor on new data",**Overfitting** in machine learning is a phenomenon where,1786.0,20776.7,8,1.79,0.0,57,4e-06,gemini-2.5-flash,Google,
-Q10,Reasoning-Math,"If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?",150 miles,To find the distance the train will travel,1520.0,19086.7,8,1.52,0.0,42,5e-06,gemini-2.5-flash,Google,
-Q11,Reasoning-Math,What is 15% of 200?,30,To find 15% of 200,1494.0,12795.3,5,1.49,0.0,18,2e-06,gemini-2.5-flash,Google,
-Q12,Reasoning-Logic,"If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?",No,"No, we cannot conclude that some roses fade",1758.0,24174.7,8,1.76,0.0,43,6e-06,gemini-2.5-flash,Google,
-Q13,Reasoning-Logic,A farmer has 17 sheep. All but 9 die. How many sheep are left?,9,There are **9** sheep left.,907.0,5329.5,5,0.91,0.0,27,3e-06,gemini-2.5-flash,Google,
-Q14,Code,Write a Python function that takes a list of numbers and returns the largest number.,Working Python code,"Okay, here are a few ways to",1695.0,26594.3,7,1.69,0.0,28,5e-06,gemini-2.5-flash,Google,
-Q15,Code,Write a Python function to check if a string is a palindrome.,Working Python code,"Okay, here are a few Python functions to check if",1634.0,27042.6,10,1.63,0.0,49,5e-06,gemini-2.5-flash,Google,
-Q16,Summarization,Summarize the concept of supply and demand in economics in 2-3 sentences.,Price relationship with supply/demand,Supply and demand are fundamental economic principles describing the relationship between the availability of a product or service and the desire for,2060.0,127804.3,22,2.06,0.0,149,1.1e-05,gemini-2.5-flash,Google,
+Q01,Factual-Simple,What is the capital of France?,Paris,The capital of France is **Paris**.,888.0,10690.7,6,0.89,0.0,35,3e-06,gemini-2.5-flash,Google,
+Q02,Factual-Simple,What planet is closest to the Sun?,Mercury,The planet closest to the Sun is **Mercury**.,1028.0,16392.0,8,1.03,0.0,45,4e-06,gemini-2.5-flash,Google,
+Q03,Factual-Simple,Who wrote the play Romeo and Juliet?,Shakespeare,The play *Romeo and Juliet* was written by **William Shakespeare**.,680.0,29767.9,10,0.68,0.0,67,5e-06,gemini-2.5-flash,Google,
+Q04,Factual-Moderate,What is photosynthesis?,Plants convert sunlight to glucose/oxygen,"**Photosynthesis** is the process by which green plants, algae, and some bacteria convert light energy into chemical energy, in the form of glucose (sugar). Essentially, it's how these organisms make their own food using sunlight.
+
+Here's a breakdown of the process:
+
+1.  **Ingredients (Inputs):**
+    *   **Sunlight:** Provides the energy needed to power the reaction.
+    *   **Carbon Dioxide (CO₂):** Absorbed from the air through tiny pores on leaves called stomata.
+    *   **Water (H₂O):** Absorbed from the soil through the roots.
+
+2.  **The ""Kitchen"" (Location):**
+    *   Photosynthesis primarily takes place in the **chloroplasts** within the cells of leaves (and other green parts of the plant).
+    *   Inside the chloroplasts is a green pigment called **chlorophyll**, which is responsible for absorbing sunlight. This is why plants are green!
+
+3.  **The ""Cooking"" (Process):**
+    *   Chlorophyll captures the light energy.
+    *   This energy is used to split water molecules and convert carbon dioxide into glucose.
+
+4.  **The ""Food"" and ""Waste"" (Outputs):**
+    *   **Glucose (C₆H₁₂O₆):** This is the sugar that the plant uses as its primary source of energy for growth, repair, and all its metabolic activities. It can also be stored as starch for later use.
+    *   **Oxygen (O₂):** This is released as a byproduct into the atmosphere through the stomata.
+
+**The Chemical Equation:**
+
+The overall process can be summarized by this chemical equation:
+
+**6CO₂ (Carbon Dioxide) + 6H₂O (Water) + Light Energy → C₆H₁₂O₆ (Glucose) + 6O₂ (Oxygen)**
+
+**Why is Photosynthesis Important?**
+
+*   **For Plants:** It's how they survive and grow.
+*   **For Animals and Humans:**
+    *   **Food Source:** Directly (eating plants) or indirectly (eating animals that eat plants), photosynthesis is the ultimate source of almost all food on Earth.
+    *   **Oxygen Production:** It replenishes the oxygen in our atmosphere, which is essential for the respiration of most living organisms, including humans.
+*   **For the Planet:** It plays a crucial role in regulating the Earth's climate by removing carbon dioxide from the atmosphere.
+
+In essence, photosynthesis is one of the most fundamental biological processes on Earth, sustaining life as we know it.",5069.0,143.4,342,7.45,2.39,2258,0.000137,gemini-2.5-flash,Google,
+Q05,Factual-Moderate,Explain what HTTP status code 404 means.,Not Found,"The HTTP status code **404 Not Found** is one of the most common and recognizable error messages on the internet.
+
+Here's a breakdown of what it means:
+
+1.  **Client Error (4xx Series):**
+    *   HTTP status codes are grouped into categories. Codes starting with `4` indicate a **client error**. This means the problem is generally on the user's (client's) side, or with the request itself, rather than the server being unable to process the request at all.
+
+2.  **""Not Found"":**
+    *   This is the core meaning. It signifies that the server **could not find the requested resource** at the URL provided.
+    *   The server *is* operational and *understood* the request, but it simply doesn't have a file, page, image, API endpoint, or any other resource corresponding to the specific address you tried to access.
+
+**In essence, when you see a 404 error, it means:**
+
+*   You asked for something specific (e.g., `www.example.com/this-page-does-not-exist`).
+*   The server at `www.example.com` received your request.
+*   The server looked for `this-page-does-not-exist` in its files.
+*   The server couldn't find it.
+
+**Common Reasons for a 404 Error:**
+
+*   **Typo in the URL:** The most frequent cause. The user simply mistyped part of the web address.
+*   **Broken Link:** A link on another website or within the same website points to a page that no longer exists or has moved.
+*   **Page Moved or Deleted:** The website owner removed the page or moved it to a new URL without setting up a proper redirect.
+*   **Incorrect File Path:** A developer might have linked to an image or script using the wrong path.
+*   **Resource Never Existed:** The requested resource was simply never created at that specific URL.
+
+**What a 404 Error Does NOT Mean:**
+
+*   **The server is down:** If the server were down, you'd likely get a different error (like a connection timeout or a 5xx server error). A 404 means the server *is* responding, it just can't find what you asked for.
+*   **You don't have permission:** While a server *could* technically return a 404 for a resource you don't have permission to see (to hide its existence), the more specific code for permission issues is **403 Forbidden**. A 404 generally implies the resource isn't there *at all* for anyone.
+
+**User Experience:**
+
+Many websites create custom 404 pages to be more user-friendly. Instead of a generic browser error, these pages often include:
+*   A friendly message explaining the error.
+*   Links back to the homepage or other important sections of the site.
+*   A search bar.
+*   Contact information.
+
+This helps users navigate back to useful content rather than abandoning the site.",5199.0,143.5,439,8.26,3.06,2657,0.000177,gemini-2.5-flash,Google,
+Q06,Technical-CS,What is the difference between a stack and a queue in data structures?,"Stack=LIFO, Queue=FIFO","The fundamental difference between a **stack** and a **queue** in data structures lies in the order in which elements are added and removed, often referred to as their **access principle**.
+
+Here's a breakdown:
+
+---
+
+### Stack
+
+*   **Principle:** **LIFO (Last In, First Out)**
+    *   The last element added to the stack is the first one to be removed.
+    *   Think of it like a stack of plates: you can only add a new plate to the top, and you can only take a plate from the top. The plate you put on last is the first one you'll take off.
+
+*   **Operations:**
+    *   **`push`**: Adds an element to the **top** of the stack.
+    *   **`pop`**: Removes the element from the **top** of the stack.
+    *   **`peek`** (or `top`): Looks at the element at the **top** without removing it.
+    *   `isEmpty`: Checks if the stack is empty.
+    *   `size`: Returns the number of elements in the stack.
+
+*   **Analogy:** A stack of books, a pile of trays in a cafeteria, the ""undo"" history in a text editor.
+
+*   **Visual Representation:**
+    ```
+    [  E  ]  <- Top (Last In)
+    [  D  ]
+    [  C  ]
+    [  B  ]
+    [  A  ]  <- Bottom (First In)
+    ```
+    If you `pop`, E comes out. If you `push` F, it goes on top of E (or where E was).
+
+*   **Common Applications:**
+    *   Function call stack (how programs manage function calls).
+    *   Undo/Redo functionality in applications.
+    *   Browser history (the ""back"" button).
+    *   Expression evaluation (e.g., converting infix to postfix).
+    *   Backtracking algorithms.
+
+---
+
+### Queue
+
+*   **Principle:** **FIFO (First In, First Out)**
+    *   The first element added to the queue is the first one to be removed.
+    *   Think of it like a line (or ""queue"") of people waiting: the first person to join the line is the first one to be served.
+
+*   **Operations:**
+    *   **`enqueue`** (or `add`/`offer`): Adds an element to the **rear** (or back) of the queue.
+    *   **`dequeue`** (or `remove`/`poll`): Removes the element from the **front** of the queue.
+    *   **`peek`** (or `front`): Looks at the element at the **front** without removing it.
+    *   `isEmpty`: Checks if the queue is empty.
+    *   `size`: Returns the number of elements in the queue.
+
+*   **Analogy:** A line of people at a ticket counter, a printer queue, cars waiting at a traffic light.
+
+*   **Visual Representation:**
+    ```
+    Front -> [ A | B | C | D | E ] <- Rear
+              (First In)          (Last In)
+    ```
+    If you `dequeue`, A comes out. If you `enqueue` F, it goes to the rear, after E.
+
+*   **Common Applications:**
+    *   Printer queues (documents waiting to be printed).
+    *   CPU scheduling (processes waiting for CPU time).
+    *   Message queues in operating systems or web servers.
+    *   Breadth-First Search (BFS) algorithm in graphs.
+    *   Buffering data (e.g., streaming video).
+
+---
+
+### Summary of Differences
+
+| Feature          | Stack                               | Queue                                  |
+| :--------------- | :---------------------------------- | :------------------------------------- |
+| **Principle**    | **LIFO (Last In, First Out)**       | **FIFO (First In, First Out)**         |
+| **Analogy**      | Stack of plates, undo/redo          | Line at a store, printer queue         |
+| **Adding Element** | `push` (to the **top**)             | `enqueue` (to the **rear/back**)       |
+| **Removing Element** | `pop` (from the **top**)            | `dequeue` (from the **front**)         |
+| **Access Points** | Only one end (the ""top"") for both add/remove | Two ends (front for removal, rear for addition) |
+| **Order**        | Elements are processed in the reverse order of their insertion. | Elements are processed in the same order as their insertion. |
+
+In essence, the choice between a stack and a queue depends entirely on the specific problem you're trying to",5450.0,144.2,620,9.75,4.3,3869,0.00025,gemini-2.5-flash,Google,
+Q07,Technical-CS,What is the time complexity of binary search?,O(log n),"The time complexity of binary search is **O(log N)**.
+
+Let's break down why:
+
+1.  **The Core Idea:** Binary search works by repeatedly dividing the search interval in half.
+2.  **How it Works:**
+    *   You start with a sorted array of `N` elements.
+    *   In the first step, you compare the target value with the middle element. If they don't match, you eliminate half of the array.
+    *   You are left with `N/2` elements to search.
+    *   In the second step, you again compare with the middle element of the remaining half, eliminating another half.
+    *   You are left with `N/4` elements.
+    *   This process continues: `N/8`, `N/16`, and so on.
+3.  **The Math:**
+    *   Let `k` be the number of steps (comparisons) it takes in the worst case.
+    *   After `k` steps, the size of the search space is `N / (2^k)`.
+    *   The search stops when the search space is reduced to 1 element (or 0 if not found).
+    *   So, `N / (2^k) = 1`
+    *   `N = 2^k`
+    *   To solve for `k`, we take the base-2 logarithm of both sides: `log2(N) = k`
+4.  **Conclusion:** The number of steps `k` is directly proportional to `log2(N)`. In Big O notation, we drop the base, so it becomes **O(log N)**.
+
+**Summary of Cases:**
+
+*   **Worst-Case Time Complexity: O(log N)**
+    *   This is the most common and important complexity to remember for binary search. It occurs when the target element is at one of the ends of the array, or not present at all, requiring the maximum number of divisions.
+*   **Average-Case Time Complexity: O(log N)**
+    *   On average, binary search still performs logarithmically because it consistently halves the search space.
+*   **Best-Case Time Complexity: O(1)**
+    *   This occurs when the target element is found in the very first comparison (i.e., the target is the middle element of the initial array).
+
+**Prerequisites:**
+
+It's crucial to remember that binary search *requires the input array to be sorted*. If the array is not sorted, binary search will not work correctly.",4811.0,162.8,344,6.92,2.11,2006,0.000139,gemini-2.5-flash,Google,
+Q08,Technical-ML,What is PCA in machine learning?,"Principal Component Analysis, dimensionality reduction","**Principal Component Analysis (PCA)** is one of the most fundamental and widely used unsupervised dimensionality reduction techniques in machine learning.
+
+In simple terms, PCA aims to **reduce the number of features (dimensions) in a dataset while retaining as much of the original information (variance) as possible.**
+
+---
+
+### The Core Idea:
+
+Imagine you have a dataset with many features, some of which might be redundant or highly correlated. PCA works by transforming these original features into a new set of features called **Principal Components (PCs)**.
+
+These Principal Components have a few key properties:
+
+1.  **Orthogonal (Uncorrelated):** Each principal component is independent of the others.
+2.  **Ordered by Variance:** The first principal component (PC1) captures the largest possible amount of variance in the data. The second principal component (PC2) captures the largest remaining variance, and so on.
+3.  **Linear Combinations:** Each principal component is a linear combination of the original features.
+
+---
+
+### Why do we need PCA? (The Problem it Solves)
+
+1.  **The Curse of Dimensionality:** As the number of features (dimensions) in a dataset increases, the data becomes sparser, making it harder for machine learning models to find meaningful patterns. This can lead to:
+    *   Increased computational cost (slower training).
+    *   More memory usage.
+    *   Higher risk of overfitting.
+    *   Difficulty in visualizing data.
+2.  **Redundancy and Correlation:** Often, multiple features in a dataset convey similar information (e.g., ""height in inches"" and ""height in centimeters""). PCA helps to identify and combine these correlated features into fewer, more informative components.
+3.  **Noise Reduction:** Less important principal components often capture noise in the data. By discarding them, PCA can effectively denoise the dataset.
+
+---
+
+### How PCA Works (Simplified Steps):
+
+1.  **Standardize the Data:** PCA is sensitive to the scale of the features. It's crucial to standardize the data (mean=0, variance=1) before applying PCA.
+2.  **Calculate the Covariance Matrix:** This matrix shows how each feature in the dataset varies with respect to every other feature.
+3.  **Compute Eigenvectors and Eigenvalues:**
+    *   **Eigenvectors** are the directions (axes) along which the data varies the most. These are the Principal Components.
+    *   **Eigenvalues** represent the magnitude of variance along each eigenvector. A larger eigenvalue means more variance is captured by that principal component.
+4.  **Select Principal Components:** You choose a subset of the eigenvectors (principal components) corresponding to the largest eigenvalues. This means you select the components that capture the most variance. For example, if you want to reduce 10 features to 3, you'd select the 3 eigenvectors with the largest eigenvalues.
+5.  **Project Data:** Transform the original data onto these selected principal components. This results in a new dataset with fewer dimensions, where each new dimension is a principal component.
+
+---
+
+### Benefits of PCA:
+
+*   **Dimensionality Reduction:** Reduces the number of features, making datasets easier to manage and analyze.
+*   **Improved Performance:** Can speed up training time for machine learning algorithms and sometimes improve model accuracy by reducing noise and overfitting.
+*   **Visualization:** Allows you to visualize high-dimensional data (e.g., reducing 100 features to 2 or 3 for plotting).
+*   **Feature Extraction:** Creates new, uncorrelated features (the principal components) that can be more informative than the original ones.
+*   **Noise Reduction:** By discarding components with low variance, PCA can help remove noise from the data.
+
+---
+
+### Limitations of PCA:
+
+*   **Loss of Interpretability:** The new principal components are linear combinations of the original features, making them harder to interpret than the original features themselves. For example, ""PC1"" might not have a clear real-world meaning like ""age"" or ""income.""
+*   **Linearity Assumption:** PCA assumes that the principal components are linear combinations of the original features. It may not perform well if the data has complex non-linear relationships.
+*   **Variance ≠ Importance:** PCA focuses on maximizing variance. A component with high variance might not necessarily be the most important for a specific predictive task.
+*   **Data Scaling:** Requires proper data scaling (standardization) before application.
+
+---
+
+### When to Use PCA:
+
+*   When dealing with datasets with a very large number of features.
+*   When features are highly correlated.
+*   As a pre-processing step before applying other machine learning algorithms (e.g., classification, clustering).
+*   For data visualization of high-dimensional data.
+*   ",5853.0,142.3,704,10.8,4.95,4817,0.000282,gemini-2.5-flash,Google,
+Q09,Technical-ML,What is overfitting in machine learning?,"Model learns training data too well, poor on new data","**Overfitting** in machine learning occurs when a model learns the training data too well, including its noise and specific patterns, to the extent that it performs poorly on new, unseen data.
+
+Think of it like a student who memorizes every single answer from a practice test without truly understanding the underlying concepts. When they encounter a slightly different question on the actual exam, they fail because they only learned the specific answers, not the general principles.
+
+Here's a breakdown:
+
+1.  **The Goal of a Machine Learning Model:** To learn general patterns from the training data that allow it to make accurate predictions or classifications on *new, unseen data*. This ability is called **generalization**.
+
+2.  **What Happens During Overfitting:**
+    *   The model becomes excessively complex or flexible.
+    *   It starts to ""memorize"" the training examples, including the random fluctuations and noise, rather than learning the underlying, true relationships.
+    *   It fits the training data almost perfectly, resulting in very low (or even zero) error on the training set.
+
+3.  **The Consequence:**
+    *   **High Performance on Training Data:** The model looks great when evaluated on the data it was trained on.
+    *   **Poor Performance on Test/Validation Data:** When presented with new data (which it hasn't seen before), its performance drops significantly because it has learned the specifics of the training set, not the general rules that apply to the broader dataset.
+
+**Analogy:**
+
+Imagine you're trying to teach a computer to distinguish between pictures of cats and dogs.
+
+*   **Good Learning (Generalization):** The computer learns features like ""pointed ears,"" ""whiskers,"" ""furry,"" ""tail,"" and understands how these combine to form a cat or a dog. It can then correctly identify new cats and dogs it's never seen before.
+*   **Overfitting:** The computer learns that *every* cat in its training set has a specific toy in the background, or a particular lighting condition. When it sees a new cat without that toy or in different lighting, it might incorrectly classify it as ""not a cat"" because it focused on irrelevant details specific to the training examples.
+
+**Visualizing Overfitting:**
+
+If you plot the error rate of a model during training:
+
+*   **Training Error:** Will continuously decrease, potentially reaching very low levels.
+*   **Validation/Test Error:** Will initially decrease alongside the training error, but at some point, it will start to *increase* again, even as the training error continues to fall. The point where the validation error starts to rise is where overfitting begins.
+
+**Causes of Overfitting:**
+
+*   **Model Complexity:** Using a model that is too complex for the amount or nature of the data (e.g., a very deep neural network for a simple problem, or a high-degree polynomial regression).
+*   **Insufficient Training Data:** Not having enough diverse examples for the model to learn general patterns.
+*   **Noisy Data:** If the training data contains errors or irrelevant information, the model might learn these ""noise"" patterns as if they were real signals.
+*   **Long Training Times:** Training a model for too many epochs (iterations) can lead to memorization.
+
+**How to Prevent/Mitigate Overfitting:**
+
+*   **More Data:** The best solution if possible. More diverse data helps the model learn general patterns.
+*   **Cross-Validation:** A technique to evaluate model performance on different subsets of the data, providing a more robust estimate of its generalization ability.
+*   **Feature Selection/Engineering:** Reducing the number of input features or creating more meaningful ones can simplify the model's task.
+*   **Regularization:** Techniques (like L1 or L2 regularization) that add a penalty to the model's loss function for having large weights, effectively discouraging overly complex models.
+*   **Early Stopping:** Monitoring the model's performance on a validation set and stopping training when the validation error starts to increase, even if the training error is still decreasing.
+*   **Simplifying the Model:** Using a less complex algorithm or reducing the number of layers/parameters in a neural network.
+*   **Ensemble Methods:** Combining predictions from multiple models (e.g., Random Forests, Gradient Boosting) can often reduce overfitting.
+*   **Dropout (for Neural Networks):** Randomly deactivating a percentage of neurons during training to prevent them from co-adapting too much.
+
+In essence, overfitting is a fundamental challenge in machine learning, and managing it is crucial for building models that perform well in real-world scenarios.",5913.0,145.3,700,10.73,4.82,4667,0.000281,gemini-2.5-flash,Google,
+Q10,Reasoning-Math,"If a train travels at 60 miles per hour, how far will it travel in 2.5 hours?",150 miles,"To find the distance the train will travel, you multiply its speed by the time it travels.
+
+*   **Speed:** 60 miles per hour
+*   **Time:** 2.5 hours
+
+Distance = Speed × Time
+Distance = 60 miles/hour × 2.5 hours
+Distance = 150 miles
+
+The train will travel **150 miles** in 2.5 hours.",1996.0,432.8,53,2.12,0.12,282,2.3e-05,gemini-2.5-flash,Google,
+Q11,Reasoning-Math,What is 15% of 200?,30,"To find 15% of 200, you can follow these steps:
+
+1.  **Convert the percentage to a decimal:**
+    15% = 15/100 = 0.15
+
+2.  **Multiply the decimal by the number:**
+    0.15 * 200 = 30
+
+Alternatively, you can think of it this way:
+*   10% of 200 is 20 (because 10/100 * 200 = 20).
+*   5% of 200 is half of 10% of 200, which is 10 (20 / 2 = 10).
+*   So, 15% of 200 is 10% + 5% = 20 + 10 = 30.
+
+The answer is **30**.",2291.0,155.5,92,2.88,0.59,412,3.7e-05,gemini-2.5-flash,Google,
+Q12,Reasoning-Logic,"If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?",No,"No, we cannot definitively conclude that some roses fade quickly.
+
+Here's why:
+
+1.  **All roses are flowers:** This means the group ""roses"" is a subset of the group ""flowers.""
+2.  **Some flowers fade quickly:** This tells us that there's an overlap between the group ""flowers"" and the group ""things that fade quickly.""
+
+However, the ""some flowers"" that fade quickly might be:
+*   **Only non-rose flowers:** For example, maybe all roses are flowers, and all tulips are flowers. If only tulips fade quickly, then ""some flowers fade quickly"" is true, but no roses fade quickly.
+*   **A mix of roses and non-rose flowers:** In this case, some roses would fade quickly.
+*   **Only roses:** This is also possible, but not necessarily true.
+
+Since the statement ""some flowers fade quickly"" doesn't specify *which* flowers, it's possible that the quickly fading flowers are entirely *outside* the subset of flowers that are roses.
+
+**In logical terms:** The conclusion is not a necessary consequence of the premises. It's possible, but not guaranteed.",5306.0,207.5,170,6.13,0.82,1043,7.1e-05,gemini-2.5-flash,Google,
+Q13,Reasoning-Logic,A farmer has 17 sheep. All but 9 die. How many sheep are left?,9,There are **9** sheep left.,1028.0,9433.9,5,1.03,0.0,27,3e-06,gemini-2.5-flash,Google,
+Q14,Code,Write a Python function that takes a list of numbers and returns the largest number.,Working Python code,"Here's a Python function that takes a list of numbers and returns the largest number.
+
+This solution leverages Python's built-in `max()` function, which is the most Pythonic and efficient way to achieve this. It also includes error handling for an empty list.
+
+```python
+def find_largest_number(numbers_list):
+    """"""
+    Finds the largest number in a list of numbers.
+
+    Args:
+        numbers_list (list): A list of numbers (integers or floats).
+
+    Returns:
+        (int or float): The largest number in the list.
+
+    Raises:
+        ValueError: If the input list is empty.
+    """"""
+    if not numbers_list:
+        raise ValueError(""Input list cannot be empty."")
+    
+    return max(numbers_list)
+
+# --- Examples ---
+print(f""Largest in [1, 5, 2, 8, 3]: {find_largest_number([1, 5, 2, 8, 3])}"") # Expected: 8
+print(f""Largest in [-10, -5, -1]: {find_largest_number([-10, -5, -1])}"") # Expected: -1
+print(f""Largest in [7]: {find_largest_number([7])}"") # Expected: 7
+print(f""Largest in [3.14, 2.71, 1.618]: {find_largest_number([3.14, 2.71, 1.618])}"") # Expected: 3.14
+print(f""Largest in [0, 0, 0]: {find_largest_number([0, 0, 0])}"") # Expected: 0
+
+# --- Test with an empty list (should raise an error) ---
+try:
+    print(f""Largest in []: {find_largest_number([])}"")
+except ValueError as e:
+    print(f""Error: {e}"")
+
+# --- Test with a list containing mixed integers and floats ---
+print(f""Largest in [10, 20.5, 5, 30, 15.2]: {find_largest_number([10, 20.5, 5, 30, 15.2])}"") # Expected: 30
+```
+
+### Explanation:
+
+1.  **`def find_largest_number(numbers_list):`**:
+    *   This defines a function named `find_largest_number` that accepts one argument, `numbers_list`.
+
+2.  **Docstring (`""""""Docstring goes here""""""`)**:
+    *   This is a good practice to explain what the function does, its arguments (`Args`), what it returns (`Returns`), and any errors it might raise (`Raises`).
+
+3.  **`if not numbers_list:`**:
+    *   This checks if the `numbers_list` is empty. In Python, an empty list evaluates to `False` in a boolean context.
+    *   It's crucial to handle this case because `max()` on an empty list would raise a `ValueError`.
+
+4.  **`raise ValueError(""Input list cannot be empty."")`**:
+    *   If the list is empty, we raise a `ValueError` with a",6662.0,116.0,325,9.46,2.8,2254,0.000132,gemini-2.5-flash,Google,
+Q15,Code,Write a Python function to check if a string is a palindrome.,Working Python code,"A palindrome is a word, phrase, number, or other sequence of characters which reads the same backward as forward.
+
+When checking for palindromes, it's common practice to:
+1.  **Ignore case:** ""Madam"" should be considered the same as ""madam"".
+2.  **Ignore non-alphanumeric characters:** Spaces, punctuation, etc., should be removed. For example, ""A man, a plan, a canal: Panama",8777.0,177.2,57,9.1,0.32,376,2.4e-05,gemini-2.5-flash,Google,
+Q16,Summarization,Summarize the concept of supply and demand in economics in 2-3 sentences.,Price relationship with supply/demand,"Supply and demand are fundamental economic principles describing the availability of a good or service (supply) and the desire of consumers for it (demand). Their interaction dictates market prices and quantities, with prices generally rising when demand exceeds supply and falling when supply outstrips demand. This dynamic constantly pushes markets towards an equilibrium point where the quantity supplied matches the quantity demanded at a specific price.",2265.0,432.3,67,2.42,0.15,458,2.9e-05,gemini-2.5-flash,Google,
 Q17,Instruction,List exactly 3 programming languages that start with the letter P.,Exactly 3 languages starting with P,"Here are 3 programming languages that start with the letter P:
 
 1.  **Python**
 2.  **PHP**
-3.  **Pascal**",745.0,192.9,17,0.83,0.09,105,8e-06,gemini-2.5-flash,Google,
-Q18,Instruction,Explain what an API is in exactly one sentence.,One sentence about software communication,An API (Application Programming Interface) is a,1821.0,17189.8,7,1.82,0.0,47,4e-06,gemini-2.5-flash,Google,
-Q19,Long-Response,"Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.","Covers DNS, TCP/IP, HTTP","The internet is a vast, global network of interconnected",1793.0,27858.8,9,1.79,0.0,56,5e-06,gemini-2.5-flash,Google,
-Q20,Long-Response,Compare and contrast supervised learning and unsupervised learning in machine learning.,Labeled vs unlabeled data,Supervised learning and unsupervised learning are two fundamental paradigms,1850.0,24197.9,9,1.85,0.0,75,6e-06,gemini-2.5-flash,Google,
+3.  **Perl**",1064.0,42645.4,17,1.06,0.0,103,8e-06,gemini-2.5-flash,Google,
+Q18,Instruction,Explain what an API is in exactly one sentence.,One sentence about software communication,An API (Application Programming Interface) is a set of definitions and protocols that allows different software applications to communicate and exchange data with each other.,3182.0,67216.4,25,3.18,0.0,174,1.1e-05,gemini-2.5-flash,Google,
+Q19,Long-Response,"Explain how the internet works, covering at least DNS, TCP/IP, and HTTP.","Covers DNS, TCP/IP, HTTP","The internet is a vast, global network of interconnected computer networks that allows billions of devices to communicate with each other. It's a complex system, but at its core, it relies on a few fundamental principles and protocols to ensure data gets from one point to another reliably and efficiently.
+
+Let's break it down, focusing on the key components:
+
+## The Internet: A Global Network of Networks
+
+Imagine the internet as a massive, worldwide postal system, but instead of letters, it delivers digital information, and instead of roads, it uses a mix of physical cables, radio waves, and satellites.
+
+**1. The Physical Infrastructure (The Roads and Wires):**
+At the most basic level, the internet is made of physical connections:
+*   **Cables:** Fiber optic cables (underground and undersea), copper wires (like old phone lines), and coaxial cables (for cable internet) form the backbone.
+*   **Wireless:** Wi-Fi, cellular networks (3G, 4G, 5G), and satellite links connect devices wirelessly to the wired infrastructure.
+*   **Routers and Switches:** These are like traffic cops and post offices. Routers direct data packets between different networks, while switches connect devices within the same local network.
+
+## Addressing: Finding Your Way
+
+Just like a postal system needs addresses, the internet needs ways to identify and locate devices.
+
+### IP Addresses (The Street Address)
+
+Every device connected to the internet (your phone, laptop, a web server) has a unique numerical label called an **IP (Internet Protocol) Address**. Think of it as the street address of a house.
+*   **IPv4:** The older standard, looks like `192.168.1.1` (four sets of numbers from 0-255). There are about 4.3 billion unique IPv4 addresses, which are running out.
+*   **IPv6:** The newer standard, looks like `2001:0db8:85a3:0000:0000:8a2e:0370:7334`. It offers a vastly larger number of unique addresses to accommodate the growing number of internet-connected devices.
+
+While computers understand IP addresses perfectly, humans find them hard to remember. That's where domain names come in.
+
+### DNS (Domain Name System - The Phonebook)
+
+You don't type `172.217.160.142` to go to Google; you",8197.0,131.2,337,10.77,2.57,2191,0.000137,gemini-2.5-flash,Google,
+Q20,Long-Response,Compare and contrast supervised learning and unsupervised learning in machine learning.,Labeled vs unlabeled data,"Supervised learning and unsupervised learning are two fundamental paradigms in machine learning, distinguished primarily by the nature of the data they learn from and the problems they aim to solve.
+
+Let's break down their characteristics, compare, and contrast them.
+
+---
+
+## Supervised Learning
+
+**Definition:** Supervised learning is a type of machine learning where the algorithm learns from a **labeled dataset**. This means that for each input data point, there is a corresponding ""correct"" output or ""label"" provided. The algorithm's goal is to learn a mapping function from the input features to the output labels, so it can accurately predict the labels for new, unseen data.
+
+**How it Works:**
+1.  **Training Phase:** The model is fed a training dataset that includes both input features (X) and their corresponding correct output labels (y).
+2.  **Learning:** The algorithm analyzes the labeled data to find patterns and relationships between the input features and the output labels. It essentially learns a function $f(X) = y$.
+3.  **Prediction:** Once trained, the model can be given new, unseen input data (X) and will use the learned function to predict its corresponding output label (y).
+4.  **Evaluation:** The model's performance is evaluated by comparing its predictions against the actual labels for a separate test dataset.
+
+**Key Characteristics:**
+*   **Labeled Data:** Requires data where the ""answer"" is already known for each example.
+*   **Direct Feedback:** The algorithm receives direct feedback during training (it knows if its predictions are right or wrong).
+*   **Predictive:** Primarily used for making predictions or classifications.
+*   **Goal-Oriented:** Aims to achieve a specific, predefined outcome.
+
+**Common Tasks/Applications:**
+*   **Classification:** Predicting a discrete category (e.g., spam/not spam, cat/dog, disease/no disease).
+    *   *Examples:* Email spam detection, image recognition, medical diagnosis.
+*   **Regression:** Predicting a continuous value (e.g., house price, temperature, stock price).
+    *   *Examples:* House price prediction, sales forecasting, predicting a person",8399.0,165.8,308,10.26,1.86,2140,0.000125,gemini-2.5-flash,Google,

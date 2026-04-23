@@ -1,3 +1,4 @@
+import anthropic
 import time
 import csv
 import os
@@ -5,7 +6,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-# ========== Test Prompts (same 20 as browser benchmark) ==========
 TEST_PROMPTS = [
     {"id": "Q01", "category": "Factual-Simple", "prompt": "What is the capital of France?", "expected": "Paris"},
     {"id": "Q02", "category": "Factual-Simple", "prompt": "What planet is closest to the Sun?", "expected": "Mercury"},
@@ -30,25 +30,18 @@ TEST_PROMPTS = [
 ]
 
 
-def benchmark_gemini(model_name="gemini-2.0-flash"):
-    try:
-        from google import genai
-    except ImportError:
-        print("ERROR: Install google-genai package first:")
-        print("  pip install google-genai")
-        return []
-
-    api_key = os.environ.get("GEMINI_API_KEY")
+def benchmark_anthropic(model_name="claude-haiku-4-5-20251001"):
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        print("ERROR: Set GEMINI_API_KEY environment variable")
-        print("  export GEMINI_API_KEY='your-key-here'")
+        print("ERROR: Set ANTHROPIC_API_KEY")
+        print("  export ANTHROPIC_API_KEY='sk-ant-...'")
         return []
 
-    client = genai.Client(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key)
     results = []
 
     print(f"\n{'='*60}")
-    print(f"Running Gemini Benchmark - Model: {model_name}")
+    print(f"Running Anthropic Benchmark - Model: {model_name}")
     print(f"{'='*60}\n")
 
     for i, test in enumerate(TEST_PROMPTS):
@@ -60,21 +53,18 @@ def benchmark_gemini(model_name="gemini-2.0-flash"):
         full_response = ""
 
         try:
-            response = client.models.generate_content_stream(
+            with client.messages.stream(
                 model=model_name,
-                contents=test["prompt"],
-                config={
-                    "temperature": 0.0,
-                    "max_output_tokens": 2048,
-                },
-            )
-            for chunk in response:
-                text = chunk.text if chunk.text else ""
-                if text and first_token_time is None:
-                    first_token_time = time.time()
-                if text:
-                    token_count += len(text.split())
-                    full_response += text
+                messages=[{"role": "user", "content": test["prompt"]}],
+                temperature=0.0,
+                max_tokens=2048,
+            ) as stream:
+                for text in stream.text_stream:
+                    if text and first_token_time is None:
+                        first_token_time = time.time()
+                    if text:
+                        token_count += len(text.split())
+                        full_response += text
 
             end_time = time.time()
 
@@ -84,8 +74,8 @@ def benchmark_gemini(model_name="gemini-2.0-flash"):
             tokens_per_sec = token_count / (decode_time / 1000) if decode_time > 0 else 0
 
             est_input_tokens = len(test["prompt"]) // 4
-            input_cost = est_input_tokens * 0.0000001
-            output_cost = token_count * 0.0000004
+            input_cost = est_input_tokens * 0.0000008
+            output_cost = token_count * 0.000004
             query_cost = input_cost + output_cost
 
             results.append({
@@ -102,8 +92,8 @@ def benchmark_gemini(model_name="gemini-2.0-flash"):
                 "response_length": len(full_response),
                 "cost_usd": round(query_cost, 6),
                 "model": model_name,
-                "provider": "Google",
-                "error": None,
+                "provider": "Anthropic",
+                "error": "",
             })
 
             print(f"TTFT: {ttft:.0f}ms | TPS: {tokens_per_sec:.1f} | Tokens: {token_count} | Cost: ${query_cost:.6f}")
@@ -111,15 +101,12 @@ def benchmark_gemini(model_name="gemini-2.0-flash"):
         except Exception as e:
             print(f"ERROR: {e}")
             results.append({
-                "id": test["id"],
-                "category": test["category"],
-                "prompt": test["prompt"],
-                "expected": test["expected"],
-                "response": "",
-                "ttft_ms": 0, "tokens_per_sec": 0, "token_count": 0,
-                "total_time_s": 0, "decode_time_s": 0, "response_length": 0,
-                "cost_usd": 0, "model": model_name, "provider": "Google",
-                "error": str(e),
+                "id": test["id"], "category": test["category"],
+                "prompt": test["prompt"], "expected": test["expected"],
+                "response": "", "ttft_ms": 0, "tokens_per_sec": 0,
+                "token_count": 0, "total_time_s": 0, "decode_time_s": 0,
+                "response_length": 0, "cost_usd": 0, "model": model_name,
+                "provider": "Anthropic", "error": str(e),
             })
 
         time.sleep(0.5)
@@ -127,104 +114,47 @@ def benchmark_gemini(model_name="gemini-2.0-flash"):
     return results
 
 
-def print_summary(results):
-    if not results:
-        return
-
-    valid = [r for r in results if r["token_count"] > 0]
-    if not valid:
-        print("\n  No valid results")
-        return
-
-    ttfts = [r["ttft_ms"] for r in valid]
-    tps_list = [r["tokens_per_sec"] for r in valid]
-    total_tokens = sum(r["token_count"] for r in valid)
-    total_cost = sum(r["cost_usd"] for r in valid)
-    total_times = [r["total_time_s"] for r in valid]
-
-    print(f"\n{'='*60}")
-    print(f"BENCHMARK SUMMARY - {valid[0]['provider']} ({valid[0]['model']})")
-    print(f"{'='*60}")
-    print(f"")
-    print(f"  --- LATENCY ---")
-    print(f"  Avg TTFT:            {sum(ttfts)/len(ttfts):.0f} ms")
-    print(f"  Min TTFT:            {min(ttfts):.0f} ms")
-    print(f"  Max TTFT:            {max(ttfts):.0f} ms")
-    print(f"")
-    print(f"  --- THROUGHPUT ---")
-    print(f"  Avg Tokens/Sec:      {sum(tps_list)/len(tps_list):.1f}")
-    print(f"  Min Tokens/Sec:      {min(tps_list):.1f}")
-    print(f"  Max Tokens/Sec:      {max(tps_list):.1f}")
-    print(f"  Total Tokens:        {total_tokens}")
-    print(f"")
-    print(f"  --- TIME ---")
-    print(f"  Avg Response Time:   {sum(total_times)/len(total_times):.2f} s")
-    print(f"  Total Benchmark Time:{sum(total_times):.1f} s")
-    print(f"")
-    print(f"  --- COST ---")
-    print(f"  Total Cost:          ${total_cost:.4f}")
-    print(f"  Avg Cost/Query:      ${total_cost/len(valid):.6f}")
-    print(f"  Cost for 10k queries:${total_cost / len(valid) * 10000:.2f}")
-    print(f"")
-    print(f"  --- COMPARISON ---")
-    print(f"  Browser (WebGPU):    $0.00 for same 20 queries")
-    print(f"  This API:            ${total_cost:.4f} for same 20 queries")
-    print(f"{'='*60}\n")
-
-
 def save_csv(results, filename):
     if not results:
         return
-
     fields = ["id", "category", "prompt", "expected", "response", "ttft_ms",
               "tokens_per_sec", "token_count", "total_time_s", "decode_time_s",
               "response_length", "cost_usd", "model", "provider", "error"]
-
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         for r in results:
             writer.writerow(r)
-
-    print(f"  Results saved to: {filename}")
+    print(f"  Saved to: {filename}")
 
 
 def main():
     timestamp = datetime.now().strftime("%Y-%m-%d")
 
     print("\n" + "=" * 60)
-    print("  EDGE AI PROJECT - Server-Side API Benchmark")
-    print("  Running 20 standardized queries via Gemini API")
-    print("  Temperature: 0.0 | Max Tokens: 256")
+    print("  Anthropic Claude Benchmark")
+    print("  20 standardized queries | temp: 0.0 | max: 2048")
     print("=" * 60)
 
-    # Run Gemini 2.5 Flash
-    print("\n[1/2] Gemini 2.5 Flash")
-    flash_results = benchmark_gemini(model_name="gemini-2.5-flash")
-    if flash_results:
-        print_summary(flash_results)
-        save_csv(flash_results, f"benchmark_gemini_2_5_flash_{timestamp}.csv")
+    results = benchmark_anthropic(model_name="claude-haiku-4-5-20251001")
+    if results:
+        valid = [r for r in results if int(r['token_count']) > 0]
+        ttfts = [r['ttft_ms'] for r in valid]
+        times = [r['total_time_s'] for r in valid]
+        tokens = [r['token_count'] for r in valid]
+        costs = [r['cost_usd'] for r in valid]
 
-    # Run Gemini 3 Flash Preview
-    print("\n[2/2] Gemini 3 Flash Preview")
-    lite_results = benchmark_gemini(model_name="gemini-3-flash-preview")
-    if lite_results:
-        print_summary(lite_results)
-        save_csv(lite_results, f"benchmark_gemini_3_flash_{timestamp}.csv")
-        
-    # Combined
-    all_results = flash_results + lite_results
-    if all_results:
-        save_csv(all_results, f"benchmark_all_gemini_{timestamp}.csv")
+        print(f"\n{'='*60}")
+        print(f"  SUMMARY - Claude Haiku 4.5")
+        print(f"{'='*60}")
+        print(f"  Avg TTFT:        {sum(ttfts)/len(ttfts):.0f} ms")
+        print(f"  Avg Time/Query:  {sum(times)/len(times):.2f} s")
+        print(f"  Avg Tokens/Query:{sum(tokens)/len(tokens):.0f}")
+        print(f"  Total Cost:      ${sum(costs):.6f}")
 
-    print("\n" + "=" * 60)
-    print("  BENCHMARK COMPLETE")
-    print("=" * 60)
-    if all_results:
-        total_cost = sum(r["cost_usd"] for r in all_results)
-        print(f"  Total queries: {len(all_results)}")
-        print(f"  Total cost: ${total_cost:.4f}")
-    print()
+        save_csv(results, f"benchmark_claude_haiku_{timestamp}.csv")
+
+    print("\n  Done!")
 
 
 if __name__ == "__main__":
