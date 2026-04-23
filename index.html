@@ -606,8 +606,8 @@
 
                 // Auto-save individual CSV as soon as each model finishes
                 const shortName = meta.label.replace(/[^a-zA-Z0-9]/g, "_");
-                triggerCSVDownload(results, `benchmark_${shortName}_${new Date().toISOString().slice(0,10)}.csv`);
-                statusEl.textContent = `[${mi+1}/${smallModels.length}] ${meta.label} done — CSV saved. Loading next…`;
+                triggerCSVDownload(results, `benchmark_${shortName}_${new Date().toISOString().slice(0, 10)}.csv`);
+                statusEl.textContent = `[${mi + 1}/${smallModels.length}] ${meta.label} done — CSV saved. Loading next…`;
             }
 
             displayComparisonTable(multiModelResults);
@@ -703,7 +703,7 @@
             let firstTok = null, tokenCount = 0, fullResponse = "";
             const reply = await engine.chat.completions.create({
                 messages: [{ role: "user", content: prompt }],
-                temperature: 0.0, max_tokens: 10, stream: true,
+                temperature: 0.0, max_tokens: 50, stream: true,
             });
             for await (const chunk of reply) {
                 const tok = chunk.choices[0]?.delta?.content || "";
@@ -721,8 +721,28 @@
 
         function extractLetter(text) {
             if (!text) return "";
-            const m = text.toUpperCase().match(/[A-D]/);
-            return m ? m[0] : "";
+            var t = text.trim().toUpperCase();
+
+            // Direct match: just "A", "B", "C", or "D"
+            if (/^[ABCD]$/.test(t)) return t;
+
+            // Starts with letter: "B) Queue" or "B."
+            var m = t.match(/^([ABCD])[\)\.\,\:\s\-]/);
+            if (m) return m[1];
+
+            // "Answer is B" or "answer: C"
+            m = t.match(/ANSWER\s*(?:IS|:)\s*([ABCD])/);
+            if (m) return m[1];
+
+            // "The correct answer is D"
+            m = t.match(/CORRECT\s*(?:ANSWER)?\s*(?:IS)?\s*([ABCD])/);
+            if (m) return m[1];
+
+            // First standalone A/B/C/D in the text
+            m = t.match(/\b([ABCD])\b/);
+            if (m) return m[1];
+
+            return "";
         }
 
         function displayMMLUSummary(results, meta, totalTimeSec) {
@@ -1003,8 +1023,8 @@
 
         function triggerCSVDownload(rows, filename) {
             const blob = new Blob([buildCSV(rows)], { type: "text/csv" });
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
             a.href = url;
             a.download = filename;
             a.click();
