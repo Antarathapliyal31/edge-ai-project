@@ -131,6 +131,12 @@
             border: 1px solid #b91c1c;
         }
 
+        #mmluBtn {
+            background: #ea580c;
+            color: white;
+            border: 1px solid #c2410c;
+        }
+
         #exportBtn {
             background: #0891b2;
             color: white;
@@ -174,6 +180,11 @@
 
         #compareBox {
             background: #fdf4ff;
+            display: none;
+        }
+
+        #mmluBox {
+            background: #fff7ed;
             display: none;
         }
 
@@ -291,6 +302,7 @@
         <h2>3. Benchmark</h2>
         <button id="benchmarkBtn" class="btn" disabled>Run Benchmark on Loaded Model (20 queries)</button>
         <button id="runAllBtn" class="btn" disabled>Run All Small Models (3 × 20 queries)</button>
+        <button id="mmluBtn" class="btn" disabled>Run MMLU Quality Benchmark</button>
     </section>
 
     <div id="progressWrap">
@@ -302,6 +314,7 @@
 
     <div id="summaryBox" class="info-box"></div>
     <div id="compareBox" class="info-box"></div>
+    <div id="mmluBox" class="info-box"></div>
     <div id="resultsWrap"></div>
 
     <button id="exportBtn" class="btn">Export Results as CSV</button>
@@ -390,6 +403,7 @@
         let loadedFromCache = false;
         let allBenchmarkResults = [];   // last single-model run
         let multiModelResults = {};   // { modelId: [...results] }
+        let mmluResults = [];   // last MMLU run
 
         // ── DOM refs ─────────────────────────────────────────────────
         const statusEl = document.getElementById("statusBox");
@@ -400,6 +414,7 @@
         const loadBtn = document.getElementById("loadBtn");
         const benchmarkBtn = document.getElementById("benchmarkBtn");
         const runAllBtn = document.getElementById("runAllBtn");
+        const mmluBtn = document.getElementById("mmluBtn");
         const progressWrap = document.getElementById("progressWrap");
         const progressFill = document.getElementById("progressFill");
         const progressLabel = document.getElementById("progressLabel");
@@ -408,6 +423,7 @@
         const systemBox = document.getElementById("systemBox");
         const summaryBox = document.getElementById("summaryBox");
         const compareBox = document.getElementById("compareBox");
+        const mmluBox = document.getElementById("mmluBox");
         const resultsWrap = document.getElementById("resultsWrap");
         const exportBtn = document.getElementById("exportBtn");
 
@@ -447,6 +463,7 @@
             sendBtn.disabled = true;
             benchmarkBtn.disabled = true;
             runAllBtn.disabled = true;
+            mmluBtn.disabled = true;
             loadedBadge.style.display = "none";
 
             const loadStart = performance.now();
@@ -475,6 +492,7 @@
             sendBtn.disabled = false;
             benchmarkBtn.disabled = false;
             runAllBtn.disabled = false;
+            mmluBtn.disabled = false;
             loadBtn.disabled = false;
 
             systemBox.style.display = "block";
@@ -600,6 +618,195 @@
             setControlsDisabled(false);
             statusEl.textContent = "All small model benchmarks complete! Individual CSVs auto-saved — click Export for combined.";
         });
+
+        // ── MMLU quality benchmark ────────────────────────────────────
+        mmluBtn.addEventListener("click", async () => {
+            if (!currentModel) return;
+            setControlsDisabled(true);
+            mmluResults = [];
+            mmluBox.style.display = "none";
+            summaryBox.style.display = "none";
+            compareBox.style.display = "none";
+            resultsWrap.style.display = "none";
+
+            statusEl.textContent = "Loading MMLU prompts (mmlu_browser_prompts.json)…";
+            let questions;
+            try {
+                const res = await fetch("mmlu_browser_prompts.json");
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                questions = await res.json();
+            } catch (e) {
+                statusEl.textContent = `ERROR loading mmlu_browser_prompts.json: ${e.message}. Run mmlu_benchmark.py first to generate it.`;
+                setControlsDisabled(false);
+                return;
+            }
+
+            progressWrap.style.display = "block";
+            progressFill.style.width = "0%";
+            metricsBox.style.display = "block";
+            const benchStart = performance.now();
+
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                const pct = ((i + 1) / questions.length * 100).toFixed(0);
+                progressFill.style.width = pct + "%";
+                progressLabel.textContent = `${currentModel.label} — MMLU ${i + 1}/${questions.length}: ${q.subject}`;
+                metricsBox.textContent = progressLabel.textContent;
+
+                try {
+                    const r = await runMMLUQuery(q.prompt);
+                    const modelLetter = extractLetter(r.response);
+                    mmluResults.push({
+                        subject: q.subject,
+                        question: q.question,
+                        choices: q.choices,
+                        correct_answer: q.correct_answer,
+                        model_answer: modelLetter,
+                        is_correct: modelLetter === q.correct_answer,
+                        exact_match: ["A", "B", "C", "D"].includes(r.response.trim()),
+                        ttft_ms: r.ttft,
+                        total_time_s: r.totalTime / 1000,
+                        response_text: r.response.trim(),
+                        model: currentModel.id,
+                        modelLabel: currentModel.label,
+                        error: "",
+                    });
+                } catch (e) {
+                    mmluResults.push({
+                        subject: q.subject, question: q.question, choices: q.choices,
+                        correct_answer: q.correct_answer, model_answer: "",
+                        is_correct: false, exact_match: false,
+                        ttft_ms: 0, total_time_s: 0, response_text: "",
+                        model: currentModel.id, modelLabel: currentModel.label,
+                        error: e.message,
+                    });
+                }
+            }
+
+            const totalSec = ((performance.now() - benchStart) / 1000).toFixed(1);
+            progressWrap.style.display = "none";
+
+            displayMMLUSummary(mmluResults, currentModel, totalSec);
+            displayMMLUTable(mmluResults, "resultsWrap");
+
+            const shortName = currentModel.label.replace(/[^a-zA-Z0-9]/g, "_");
+            triggerMMLUDownload(mmluResults, `mmlu_${shortName}_${new Date().toISOString().slice(0, 10)}.csv`);
+
+            statusEl.textContent = `MMLU benchmark complete — CSV saved (${totalSec}s total).`;
+            systemBox.style.display = "block";
+            systemBox.innerHTML = await getSystemMetrics();
+            setControlsDisabled(false);
+        });
+
+        async function runMMLUQuery(prompt) {
+            const t0 = performance.now();
+            let firstTok = null, tokenCount = 0, fullResponse = "";
+            const reply = await engine.chat.completions.create({
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.0, max_tokens: 10, stream: true,
+            });
+            for await (const chunk of reply) {
+                const tok = chunk.choices[0]?.delta?.content || "";
+                if (tok && !firstTok) firstTok = performance.now();
+                if (tok) { tokenCount++; fullResponse += tok; }
+            }
+            const t1 = performance.now();
+            return {
+                response: fullResponse,
+                ttft: firstTok ? firstTok - t0 : 0,
+                totalTime: t1 - t0,
+                tokenCount,
+            };
+        }
+
+        function extractLetter(text) {
+            if (!text) return "";
+            const m = text.toUpperCase().match(/[A-D]/);
+            return m ? m[0] : "";
+        }
+
+        function displayMMLUSummary(results, meta, totalTimeSec) {
+            const valid = results.filter(r => !r.error);
+            if (!valid.length) return;
+
+            const correct = valid.filter(r => r.is_correct).length;
+            const exact = valid.filter(r => r.exact_match).length;
+            const ttfts = valid.map(r => r.ttft_ms).filter(v => v > 0);
+            const times = valid.map(r => r.total_time_s).filter(v => v > 0);
+
+            const perSubject = {};
+            valid.forEach(r => {
+                if (!perSubject[r.subject]) perSubject[r.subject] = { correct: 0, total: 0 };
+                perSubject[r.subject].total++;
+                if (r.is_correct) perSubject[r.subject].correct++;
+            });
+
+            const avg = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : 0;
+
+            let html = `<b>MMLU QUALITY BENCHMARK — ${meta.label} (${meta.org})</b><br>`;
+            html += `Date: ${new Date().toISOString()}<br><br>`;
+            html += `<b>OVERALL</b><br>`;
+            html += `  Questions: ${valid.length} &nbsp;|&nbsp; Accuracy: ${(correct / valid.length * 100).toFixed(1)}% &nbsp;|&nbsp; Exact match: ${(exact / valid.length * 100).toFixed(1)}%<br>`;
+            html += `  Avg TTFT: ${avg(ttfts).toFixed(0)} ms (min ${Math.min(...ttfts).toFixed(0)} / max ${Math.max(...ttfts).toFixed(0)})<br>`;
+            html += `  Avg time/query: ${avg(times).toFixed(2)} s &nbsp;|&nbsp; Total: ${totalTimeSec}s<br><br>`;
+
+            html += `<b>PER-SUBJECT ACCURACY</b><br>`;
+            const subjects = Object.keys(perSubject).sort();
+            html += `<table><tr><th>Subject</th><th>Correct</th><th>Total</th><th>Accuracy</th></tr>`;
+            subjects.forEach(s => {
+                const row = perSubject[s];
+                const pct = (row.correct / row.total * 100).toFixed(0);
+                html += `<tr><td>${s}</td><td>${row.correct}</td><td>${row.total}</td><td>${pct}%</td></tr>`;
+            });
+            html += `</table>`;
+
+            mmluBox.style.display = "block";
+            mmluBox.innerHTML = html;
+        }
+
+        function displayMMLUTable(results, containerId) {
+            const wrap = document.getElementById(containerId);
+            let html = `<br><b>MMLU Per-Query Results — ${results[0]?.modelLabel || ""}:</b><br><table>`;
+            html += "<tr><th>Subject</th><th>Question</th><th>Correct</th><th>Model</th><th>Match</th><th>TTFT (ms)</th><th>Total (s)</th><th>Response</th></tr>";
+            results.forEach(r => {
+                const qPreview = r.question.substring(0, 80).replace(/\n/g, " ") + (r.question.length > 80 ? "…" : "");
+                const mark = r.is_correct ? "OK" : (r.error ? "ERR" : "X");
+                html += `<tr>
+                    <td>${r.subject}</td>
+                    <td>${qPreview}</td>
+                    <td>${r.correct_answer}</td>
+                    <td>${r.model_answer || "—"}</td>
+                    <td>${mark}</td>
+                    <td>${r.ttft_ms.toFixed(0)}</td>
+                    <td>${r.total_time_s.toFixed(2)}</td>
+                    <td>${(r.response_text || "").substring(0, 40)}</td>
+                </tr>`;
+            });
+            html += "</table>";
+            wrap.style.display = "block";
+            wrap.innerHTML = html;
+        }
+
+        function triggerMMLUDownload(rows, filename) {
+            const clean = (s) => '"' + String(s).replace(/"/g, '""').replace(/\n/g, " ") + '"';
+            let csv = "subject,question,choices,correct_answer,model_answer,is_correct,exact_match,ttft_ms,total_time_s,response_text,model,error\n";
+            rows.forEach(r => {
+                csv += [
+                    clean(r.subject), clean(r.question), clean((r.choices || []).join(" | ")),
+                    clean(r.correct_answer), clean(r.model_answer),
+                    r.is_correct, r.exact_match,
+                    r.ttft_ms.toFixed(0), r.total_time_s.toFixed(3),
+                    clean(r.response_text), clean(r.model), clean(r.error || ""),
+                ].join(",") + "\n";
+            });
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
         // ── Core benchmark runner ─────────────────────────────────────
         async function runBenchmarkForModel(meta, resultsArr) {
@@ -861,6 +1068,7 @@
             sendBtn.disabled = disabled || !currentModel;
             benchmarkBtn.disabled = disabled || !currentModel;
             runAllBtn.disabled = disabled;
+            mmluBtn.disabled = disabled || !currentModel;
         }
     </script>
 </body>
